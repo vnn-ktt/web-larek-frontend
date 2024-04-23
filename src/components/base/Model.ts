@@ -1,11 +1,10 @@
-import { IEventEmitter } from './EventEmitter';
-import { EventType } from '../../types/types.ts';
+import { IEventEmitter, IModel, EnEvents } from '../../types/types';
 
-export abstract class Model<T> {
+export abstract class Model<T> implements IModel<T> {
   protected _data: Partial<T> | null;
   protected _events: IEventEmitter;
 
-  constructor(data: Partial<T>, events: IEventEmitter) {
+  constructor(data: Partial<T>, protected events: IEventEmitter) {
     this._data = data;
     this._events = events;
   }
@@ -27,6 +26,6 @@ export abstract class Model<T> {
   }
 
   protected _changed(): void {
-    this._events.emit(EventType.ModelChange, { data: this._data });
+    this._events.emit(EnEvents.ModelChange, { data: this._data });
   }
 }

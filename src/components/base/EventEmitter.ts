@@ -1,34 +1,25 @@
-type EventName = string | RegExp;
-type Subscriber = Function;
-type TEventEmitter = {
-  eventName: EventName;
-  data: unknown;
-};
-
-export interface IEventEmitter {
-  on<T extends object>(event: EventName, callback: (data: T) => void): void;
-  emit<T extends object>(event: string, data?: T): void;
-  trigger<T extends object>(
-    event: string,
-    context?: Partial<T>,
-  ): (data: T) => void;
-}
+import {
+  TEventName,
+  TEventEmitter,
+  TSubscriber,
+  IEventEmitter,
+} from '../../types/types';
 
 export class EventEmitter implements IEventEmitter {
-  _events: Map<EventName, Set<Subscriber>>;
+  _events: Map<TEventName, Set<TSubscriber>>;
 
   constructor() {
-    this._events = new Map<EventName, Set<Subscriber>>();
+    this._events = new Map<TEventName, Set<TSubscriber>>();
   }
 
-  on<T extends object>(eventName: EventName, callback: (event: T) => void) {
+  on<T extends object>(eventName: TEventName, callback: (event: T) => void) {
     if (!this._events.has(eventName)) {
-      this._events.set(eventName, new Set<Subscriber>());
+      this._events.set(eventName, new Set<TSubscriber>());
     }
     this._events.get(eventName)?.add(callback);
   }
 
-  off(eventName: EventName, callback: Subscriber) {
+  off(eventName: TEventName, callback: TSubscriber) {
     if (this._events.has(eventName)) {
       this._events.get(eventName)?.delete(callback);
       if (this._events.get(eventName)?.size === 0) {
@@ -53,7 +44,7 @@ export class EventEmitter implements IEventEmitter {
   }
 
   offAll() {
-    this._events = new Map<string, Set<Subscriber>>();
+    this._events = new Map<string, Set<TSubscriber>>();
   }
 
   trigger<T extends object>(eventName: string, context?: Partial<T>) {

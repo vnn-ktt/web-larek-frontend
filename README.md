@@ -2,6 +2,8 @@
 
 ## Описание проекта
 
+Онлайн-магазин вещей для веб-разработчика. Работа выполнена в контексте паттерна MVP в событийно-ориентированном подходе.
+
 ## Используемый стек технологий
 
 _HTML, SCSS, JavaScript, TypeScript, Webpack_
@@ -49,38 +51,19 @@ npm run build
 yarn build
 ```
 
-## Основные типы
-
-### EventEmitter
-
-- type EventName = string | RegExp;
-
-- type Subscriber = Function;
-
-- type TEventEmitter = {
-  eventName: EventName;
-  data: unknown;
-  };
-
-### Api
-
-- export type ApiListResponse<Type> = {
-  total: number;
-  items: Type[];
-  };
-- export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+## Основные типы, перечисления и интерфейсы
 
 ### Перечисления
 
-- export enum TProductCategory {
+- enum EnProductCategories {
   soft = 'софт-скил',
   hard = 'хард-скил',
   additional = 'дополнительное',
   other = 'другое',
   button = 'кнопка',
-  }
+  } _//определяет категории продукта_
 
-- export enum EventType {
+- enum EnEvents {
   ModelChange = 'model:change',
   CatalogPainted = 'catalog:painted',
   ProductSelect = 'product:select',
@@ -95,7 +78,132 @@ yarn build
   ModalOpen = 'modal:open',
   ModalClose = 'modal:close',
   FormChange = 'form:change',
-  }
+  } _//определяет типы событий_
+
+### Типы
+
+- type TApiListResponse<Type> = {
+  total: number;
+  items: Type[];
+  }; _// Описывает ответ от API, содержащий общее количество элементов и сами элементы_
+
+- type TApiPostMethods = 'POST' | 'PUT' | 'DELETE'; _// Представляет поддерживаемые методы запроса в API (POST, PUT, DELETE)_
+
+- type TEventName = string | RegExp; _// Определяет имя события_
+
+- type TSubscriber = Function; _// Подписчик на событие, представленный в виде функции_
+
+- type TEventEmitter = {
+  eventName: TEventName;
+  data: unknown;
+  }; _// Представляет собой структуру объекта события, включающего имя события и данные, связанные с событием_
+
+- type TPaymentMethods = 'card' | 'cash'; _// Возможные способы оплаты_
+
+- type TFormErrors = Partial<Record<keyof IOrder, string>>; _// Представляет ошибки формы, где ключами являются свойства IOrder, а значениями - строки ошибок_
+
+### Интерфейсы базовых компонент
+
+- interface IApi {
+  baseUrl: string;
+  get(uri: string): Promise<object>;
+  post(uri: string, data: object, method: TApiPostMethods): Promise<object>;
+  } _//интерфейс АПИ_
+
+- interface IEventEmitter {
+  on<T extends object>(event: TEventName, callback: (data: T) => void): void;
+  emit<T extends object>(event: string, data?: T): void;
+  trigger<T extends object>(
+  event: string,
+  context?: Partial<T>,
+  ): (data: T) => void;
+  } _//интерфейс объекта событий_
+
+- interface IModel<T> {
+  setData(data: Partial<T>): void;
+  getData(): Partial<T> | null;
+  updateData(updatedData: Partial<T>): void;
+  clearData(): void;
+  } _//интерфейс модели данных_
+
+- interface IView<T> {
+  setText(element: HTMLElement, value: unknown): void;
+  toggleClass(element: HTMLElement, className: string, force?: boolean): void;
+  toggleDisabled(element: HTMLElement, state: boolean): void;
+  toggleHidden(element: HTMLElement): void;
+  render(data?: Partial<T>): HTMLElement;
+  } _//интерфейс базового компонента GUI_
+
+- interface IForm {
+  reset(): void;
+  validate(): boolean;
+  submit(): Promise<boolean>;
+  } _// интерфейс описывает компоненты формы с методами сброса, проверки валидности и отправки данных_
+
+- interface IFormState {
+  valid: boolean;
+  errors: TFormErrors[];
+  } _// интерфейс описывает состояние формы_
+
+- interface IAppState {
+  catalog: ICatalog;
+  basket: IBasket;
+  order: IOrder | null;
+  } _//интерфейс состояния приложения в настоящий момент времени_
+
+  ### Интерфейсы моделей данных
+
+- interface IProduct {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  image: string;
+  category: EnProductCategories;
+  selected: boolean;
+  } _// интерфейс описывает продукт_
+
+- interface ICatalog {
+  products: IProduct[];
+  } _// интерфейс описывает каталог продуктов_
+
+- interface IBasket {
+  products: IProduct[];
+  getProducts(): IProduct[];
+  getTotal(): number;
+  getAmount(): number;
+  addProduct(product: IProduct): void;
+  removeProduct(product: IProduct): void;
+  clearBasket(): void;
+  } _// интерфейс описывает корзину продуктов_
+
+- interface IPayment {
+  paymentMethod: TPaymentMethods;
+  address: string;
+  } _// интерфейс описывает информацию о платеже_
+
+- interface IContacts {
+  email: string;
+  phone: string;
+  } _// интерфейс описывает контактные данные_
+
+- interface ISuccessOrder {
+  total: number;
+  } _// интерфейс описывает информацию об успешном заказе_
+
+- interface IOrder extends IPayment, IContacts, ISuccessOrder {} _// интерфейс описывает информацию о заказе, включая информацию о платеже, контактные данные и информацию об успешном заказе_
+
+### Интерфейсы GUI
+
+- interface IPage {
+  catalog: HTMLElement[];
+  productsCounter: number;
+  } _// интерфейс описывает страницу_
+
+- interface IBasketView {
+  list: HTMLElement[];
+  total: number;
+  } _// интерфейс описывает корзину товаров_
 
 ## Базовые компоненты
 
@@ -114,31 +222,34 @@ yarn build
 - offAll() - удаляет обработчик со всех событий;
 - trigger<T extends object>(eventName: string, context?: Partial<T>) - генерирует событие в заданном контексте
 
-Список возможных событий:
+Список возможных событий (таблица имеет не окончательный вид):
 
-catalog:painted - каталог товаров отрисован
-product:select - продукт выбран
-basket:add - продукт добавлен в корзину
-basket:remove - продукт удален из корзины
-basket:open - корзина открыта
-basket:close - корзина открыта
-basket:change - корзина изменилась
-payment:filled - пользователем заполнена форма оплаты
-contacts:filled - пользователем заполнена форма контактов
-order:post - заказ отправлен на сервер
-modal:open - открыто модальное окно
-modal:close - закрыто модальное окно
-form:change - изменились данные в форме
+| Событие         | Описание                                |
+| --------------- | --------------------------------------- |
+| model:change    | Изменилась модель данных                |
+| catalog:painted | Каталог товаров отрисован               |
+| product:select  | Продукт выбран                          |
+| basket:add      | Продукт добавлен в корзину              |
+| basket:remove   | Продукт удален из корзины               |
+| basket:open     | Корзина открыта                         |
+| basket:close    | Корзина закрыта                         |
+| basket:change   | Корзина изменилась                      |
+| payment:filled  | Пользователем заполнена форма оплаты    |
+| contacts:filled | Пользователем заполнена форма контактов |
+| order:post      | Заказ отправлен на сервер               |
+| modal:open      | Открыто модальное окно                  |
+| modal:close     | Закрыто модальное окно                  |
+| form:change     | Данные в форме изменились               |
 
 ### Класс Api
 
 Описывает **клиент-серверное взаимодействие** приложения.
 
-**Конструктор** принимает аргументами основной URL сервера, объект опций и сохраняет их в поля baseUrl, options.
+**Конструктор** принимает аргументами основной URL сервера, объект опций и сохраняет их в поля baseUrl, \_options.
 
 Методы класса:
 
-- handleResponse(response: Response): Promise<object> - инкапсулированный метод, обрабатывает ответ от сервера (по умолчанию - в формате JSON);
+- \_handleResponse(response: Response): Promise<object> - инкапсулированный метод, обрабатывает ответ от сервера (по умолчанию - в формате JSON);
 - get(uri: string) - возвращает обработанные c handleResponse данные, отправленные с помощью метода GET;
 - post(uri: string, data: object, method: ApiPostMethods = 'POST') - возвращает обработанные c handleResponse данные, отправленные с помощью метода POST
 
@@ -155,5 +266,19 @@ form:change - изменились данные в форме
 - updateData(updatedData: Partial<T>): void - производит обновление данных с возможностью объединения старых и новых оных;
 - clearData(): void - присваивает null полю data;
 - protected changed(): void - для оповещения других классов об изменениях в модели
+
+### Класс View
+
+Описывает **пользовательский интерфейс**.
+
+**Конструктор** принимает аргументом данные типа HTMLElement.
+
+Методы класса:
+
+- setText(element: HTMLElement, value: unknown): void - устанавливает текстовое содержимое элемента element в соответствии с заданным значением value;
+- toggleClass(element: HTMLElement, className: string, force?: boolean): void - переключает класс className для элемента element;
+- toggleDisabled(element: HTMLElement, state: boolean): void - изменяет доступность элемента element;
+- toggleHidden(element: HTMLElement): void - переключает видимость элемента element;
+- render(data?: Partial<T>): HTMLElement - обновляет свойства объекта на основе переданных данных data (рендерит элемент)
 
 ## Компоненты

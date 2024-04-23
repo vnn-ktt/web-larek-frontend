@@ -1,16 +1,12 @@
-export type ApiListResponse<Type> = {
-  total: number;
-  items: Type[];
-};
-export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+import { IApi, TApiPostMethods } from '../../types/types';
 
-export class Api {
+export class Api implements IApi {
   readonly baseUrl: string;
-  protected options: RequestInit;
+  protected _options: RequestInit;
 
   constructor(baseUrl: string, options: RequestInit = {}) {
     this.baseUrl = baseUrl;
-    this.options = {
+    this._options = {
       headers: {
         'Content-Type': 'application/json',
         ...((options.headers as object) ?? {}),
@@ -18,7 +14,7 @@ export class Api {
     };
   }
 
-  protected handleResponse(response: Response): Promise<object> {
+  protected _handleResponse(response: Response): Promise<object> {
     if (response.ok) return response.json();
     else
       return response
@@ -28,16 +24,16 @@ export class Api {
 
   get(uri: string) {
     return fetch(this.baseUrl + uri, {
-      ...this.options,
+      ...this._options,
       method: 'GET',
-    }).then(this.handleResponse);
+    }).then(this._handleResponse);
   }
 
-  post(uri: string, data: object, method: ApiPostMethods = 'POST') {
+  post(uri: string, data: object, method: TApiPostMethods = 'POST') {
     return fetch(this.baseUrl + uri, {
-      ...this.options,
+      ...this._options,
       method,
       body: JSON.stringify(data),
-    }).then(this.handleResponse);
+    }).then(this._handleResponse);
   }
 }
