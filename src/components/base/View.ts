@@ -1,6 +1,4 @@
-import { IView } from '../../types/types';
-
-export abstract class View<T> implements IView<T> {
+export abstract class View<T> {
   constructor(protected readonly container: HTMLElement) {}
 
   setText(element: HTMLElement, value: unknown): void {

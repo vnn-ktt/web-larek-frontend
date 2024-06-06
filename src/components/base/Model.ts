@@ -1,31 +1,35 @@
-import { IEventEmitter, IModel, EnEvents } from '../../types/types';
+import { EnEvents, IEventEmitter } from '../../types/types';
 
-export abstract class Model<T> implements IModel<T> {
-  protected _data: Partial<T> | null;
-  protected _events: IEventEmitter;
+export const isModel = (obj: unknown): obj is Model<unknown> => {
+  return obj instanceof Model;
+};
 
-  constructor(data: Partial<T>, protected events: IEventEmitter) {
-    this._data = data;
-    this._events = events;
+export abstract class Model<T> {
+  constructor(
+    protected data: Partial<T>,
+    protected eventEmitter: IEventEmitter,
+  ) {}
+
+  setData?(data: Partial<T>): void {
+    Object.assign(this.data, data);
+    this.emitChanges(EnEvents.ModelChange, this.data);
   }
 
-  setData(data: Partial<T>): void {
-    this._data = data;
+  getData?(): Partial<T> | null {
+    return this.data ? { ...this.data } : null;
   }
 
-  getData(): Partial<T> | null {
-    return this._data;
+  updateData?(updatedData: Partial<T>): void {
+    Object.assign(this.data, updatedData);
+    this.emitChanges(EnEvents.ModelChange, this.data);
   }
 
-  updateData(updatedData: Partial<T>): void {
-    this._data = { ...this._data, ...updatedData };
+  clearData?(): void {
+    this.data = {} as Partial<T>;
+    this.emitChanges(EnEvents.ModelChange, this.data);
   }
 
-  clearData(): void {
-    this._data = null;
-  }
-
-  protected _changed(): void {
-    this._events.emit(EnEvents.ModelChange, { data: this._data });
+  emitChanges(event: string, payload?: object): void {
+    this.eventEmitter.emit(event, payload ?? {});
   }
 }

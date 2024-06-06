@@ -12,6 +12,8 @@ export enum EnProductCategories {
 
 export enum EnEvents {
   ModelChange = 'model:change',
+  ProductChange = 'product:change',
+  CatalogChange = 'catalog:change',
   CatalogPainted = 'catalog:painted',
   ProductSelect = 'product:select',
   BasketAdd = 'basket:add',
@@ -51,6 +53,8 @@ export type TPaymentMethods = 'card' | 'cash';
 
 export type TFormErrors = Partial<Record<keyof IOrder, string>>;
 
+export type TProductStatus = 'basket' | 'showcase';
+
 /*
  *Interfaces
  **/
@@ -59,8 +63,8 @@ export type TFormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IApi {
   baseUrl: string;
-  get(uri: string): Promise<object>;
-  post(uri: string, data: object, method: TApiPostMethods): Promise<object>;
+  get(uri: string): Promise<unknown>;
+  post(uri: string, data: object, method: TApiPostMethods): Promise<unknown>;
 }
 
 export interface IEventEmitter {
@@ -70,21 +74,6 @@ export interface IEventEmitter {
     event: string,
     context?: Partial<T>,
   ): (data: T) => void;
-}
-
-export interface IModel<T> {
-  setData(data: Partial<T>): void;
-  getData(): Partial<T> | null;
-  updateData(updatedData: Partial<T>): void;
-  clearData(): void;
-}
-
-export interface IView<T> {
-  setText(element: HTMLElement, value: unknown): void;
-  toggleClass(element: HTMLElement, className: string, force?: boolean): void;
-  toggleDisabled(element: HTMLElement, state: boolean): void;
-  toggleHidden(element: HTMLElement): void;
-  render(data?: Partial<T>): HTMLElement;
 }
 
 export interface IAppState {
@@ -113,7 +102,6 @@ export interface IProduct {
   price: number;
   image: string;
   category: EnProductCategories;
-  selected: boolean;
 }
 
 export interface ICatalog {
@@ -141,6 +129,7 @@ export interface IContacts {
 }
 
 export interface ISuccessOrder {
+  id: string;
   total: number;
 }
 
@@ -156,4 +145,10 @@ export interface IPage {
 export interface IBasketView {
   list: HTMLElement[];
   total: number;
+}
+
+/* API */
+export interface IWeblarekApi {
+  getProductList: () => Promise<IProduct[]>;
+  orderResult: (order: IOrder) => Promise<ISuccessOrder>;
 }
