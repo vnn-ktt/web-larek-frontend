@@ -14,13 +14,13 @@ export enum EnEvents {
   ModelChange = 'model:change',
   ProductChange = 'product:change',
   CatalogChange = 'catalog:change',
-  CatalogPainted = 'catalog:painted',
-  ProductSelect = 'product:select',
-  BasketAdd = 'basket:add',
-  BasketRemove = 'basket:remove',
-  BasketOpen = 'basket:open',
-  BasketClose = 'basket:close',
-  BasketChange = 'basket:change',
+  CatalogAssembled = 'catalog:assembled',
+  CardSelect = 'card:select',
+
+  CartOpen = 'cart:open',
+  CartClose = 'cart:close',
+  CartChange = 'cart:change',
+
   PaymentFilled = 'payment:filled',
   ContactsFilled = 'contacts:filled',
   OrderPost = 'order:post',
@@ -51,21 +51,15 @@ export type TEventEmitter = {
 
 export type TPaymentMethods = 'card' | 'cash';
 
-export type TFormErrors = Partial<Record<keyof IOrder, string>>;
+export type TProductStatus = 'basket' | 'gallery';
 
-export type TProductStatus = 'basket' | 'showcase';
+export type TFormErrors = Partial<Record<keyof IOrder, string>>;
 
 /*
  *Interfaces
  **/
 
-/*Base*/
-
-export interface IApi {
-  baseUrl: string;
-  get(uri: string): Promise<unknown>;
-  post(uri: string, data: object, method: TApiPostMethods): Promise<unknown>;
-}
+/* Events */
 
 export interface IEventEmitter {
   on<T extends object>(event: TEventName, callback: (data: T) => void): void;
@@ -74,23 +68,6 @@ export interface IEventEmitter {
     event: string,
     context?: Partial<T>,
   ): (data: T) => void;
-}
-
-export interface IAppState {
-  catalog: ICatalog;
-  basket: IBasket;
-  order: IOrder | null;
-}
-
-export interface IForm {
-  reset(): void;
-  validate(): boolean;
-  submit(): Promise<boolean>;
-}
-
-export interface IFormState {
-  valid: boolean;
-  errors: TFormErrors[];
 }
 
 /*Model Components*/
@@ -102,20 +79,24 @@ export interface IProduct {
   price: number;
   image: string;
   category: EnProductCategories;
+  status: TProductStatus;
+}
+
+export interface IProductList {
+  products: IProduct[];
 }
 
 export interface ICatalog {
-  products: IProduct[];
+  addProduct(productData: Partial<IProduct>): void;
+  removeProduct(productId: string): void;
+  getProductById(productId: string): IProduct | undefined;
+  getAllProducts(): IProduct[];
+  updateProduct(productId: string, updatedData: Partial<IProduct>): void;
 }
 
-export interface IBasket {
-  products: IProduct[];
-  getProducts(): IProduct[];
-  getTotal(): number;
-  getAmount(): number;
-  addProduct(product: IProduct): void;
-  removeProduct(product: IProduct): void;
-  clearBasket(): void;
+export interface IBasket extends ICatalog {
+  getTotalCost(): number;
+  getProductsAmount(): number;
 }
 
 export interface IPayment {
@@ -138,17 +119,57 @@ export interface IOrder extends IPayment, IContacts, ISuccessOrder {}
 /*View Components */
 
 export interface IPage {
-  catalog: HTMLElement[];
-  productsCounter: number;
+  wrapper: HTMLElement;
+  gallery: HTMLElement;
+  cart: HTMLElement;
+  cartCounter: HTMLElement;
+  isLocked: boolean;
 }
 
-export interface IBasketView {
+export interface ICard {
+  index: HTMLElement;
+  title: HTMLElement;
+  image: HTMLImageElement;
+  category: HTMLElement;
+  price: HTMLElement;
+  description: HTMLElement;
+  button: HTMLButtonElement;
+  buttonText: string;
+}
+
+export interface ICardAction {
+  onClick: (event: MouseEvent) => void;
+}
+
+export interface IGallery {
+  cards: ICard[];
+}
+
+export interface ICart {
   list: HTMLElement[];
   total: number;
 }
 
-/* API */
+export interface IForm {
+  reset(): void;
+  validate(): boolean;
+  submit(): Promise<boolean>;
+}
+
+export interface IFormState {
+  valid: boolean;
+  errors: TFormErrors[];
+}
+
+/* API Components */
+
+export interface IApi {
+  baseUrl: string;
+  get(uri: string): Promise<unknown>;
+  post(uri: string, data: object, method: TApiPostMethods): Promise<unknown>;
+}
+
 export interface IWeblarekApi {
   getProductList: () => Promise<IProduct[]>;
-  orderResult: (order: IOrder) => Promise<ISuccessOrder>;
+  postOrder: (order: IOrder) => Promise<ISuccessOrder>;
 }

@@ -4,8 +4,8 @@ import {
   IProduct,
   ISuccessOrder,
   IWeblarekApi,
-} from '../types/types';
-import { Api } from './base/Api';
+} from '../../types/types';
+import { Api } from '../base/Api';
 
 export class WeblarekApi extends Api implements IWeblarekApi {
   protected readonly _cdn: string;
@@ -24,7 +24,7 @@ export class WeblarekApi extends Api implements IWeblarekApi {
     );
   }
 
-  orderResult(order: IOrder): Promise<ISuccessOrder> {
+  postOrder(order: IOrder): Promise<ISuccessOrder> {
     return this.post(`/order/`, order).then((data: ISuccessOrder) => data);
   }
 }

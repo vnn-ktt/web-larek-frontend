@@ -1,10 +1,27 @@
 export abstract class View<T> {
   constructor(protected readonly container: HTMLElement) {}
 
-  setText(element: HTMLElement, value: unknown): void {
+  setTextContent(element: HTMLElement, value: unknown): void {
     if (element) {
       element.textContent = String(value);
     }
+  }
+
+  setImage(element: HTMLImageElement, src: string, alt?: string) {
+    if (element) {
+      element.src = src;
+      if (alt) {
+        element.alt = alt;
+      }
+    }
+  }
+
+  getChild<T extends HTMLElement>(selector: string): T {
+    const element = this.container.querySelector<T>(selector);
+    if (!element) {
+      throw new Error(`Element not found: ${selector}`);
+    }
+    return element;
   }
 
   toggleClass(element: HTMLElement, className: string, force?: boolean): void {
