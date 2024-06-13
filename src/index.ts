@@ -5,24 +5,24 @@ import * as utils from './utils/utils';
 /* Presenter */
 import { EventEmitter } from './components/base/EventEmitter';
 /* Model */
-import { Product } from './components/model/Product';
 import { Catalog } from './components/model/Catalog';
 /* View */
+import { Modal } from './components/view/Modal';
 import { Card } from './components/view/Card';
+import { CardPreview } from './components/view/CardPreview';
 import { Page } from './components/view/Page';
 /* Constants */
-import { API_URL, CDN_URL } from './utils/constants';
+import { API_URL, WEBLAREK_URL } from './utils/constants';
 /* Types */
-import { EnEvents, IProduct, ICardAction } from './types/types';
+import { EnEvents, IProduct } from './types/types';
 /* Api */
-import { WeblarekApi } from './components/presenter/WeblarekApi';
-import { CardPreview } from './components/view/CardPreview';
+import { WeblarekApi } from './components/WeblarekApi';
 
 //Получаем шаблоны компонентов
 const cardCatalogTemplate =
   utils.ensureElement<HTMLTemplateElement>('#card-catalog');
-// const cardPreviewTemplate =
-//   utils.ensureElement<HTMLTemplateElement>('#card-preview');
+const cardPreviewTemplate =
+  utils.ensureElement<HTMLTemplateElement>('#card-preview');
 // const cardBasketTemplate =
 //   utils.ensureElement<HTMLTemplateElement>('#card-basket');
 // const basketTemplate = utils.ensureElement<HTMLTemplateElement>('#basket');
@@ -32,9 +32,13 @@ const cardCatalogTemplate =
 
 //Инициализация объектов
 const eventEmitter = new EventEmitter();
-const weblarekApi = new WeblarekApi(API_URL, CDN_URL);
+const weblarekApi = new WeblarekApi(API_URL, WEBLAREK_URL);
 const catalog = new Catalog({ products: [] }, eventEmitter);
 const page = new Page(document.body, eventEmitter);
+const modal = new Modal(
+  utils.ensureElement<HTMLElement>('#modal-container'),
+  eventEmitter,
+);
 
 // Получение данных о продуктах с сервера
 weblarekApi
@@ -48,19 +52,31 @@ weblarekApi
 
 // Выводим каталог товаров на главную страницу
 eventEmitter.on(EnEvents.CatalogAssembled, () => {
-  const gallery = catalog.getAllProducts().map((item) => {
+  const gallery = catalog.getAllProducts().map((product) => {
     const container = utils.cloneTemplate(cardCatalogTemplate);
     try {
-      const card = new CardPreview(container, item, {
-        onClick: () => eventEmitter.emit(EnEvents.CardSelect, item),
+      const card = new Card(container, {
+        onClick: () => eventEmitter.emit(EnEvents.CardSelect, product),
       });
-      return card.render();
+      return card.render(product);
     } catch (error) {
       console.error('#Error creating or rendering CardPreview#:', error);
       return null;
     }
   });
   page.replaceGallery(gallery);
+});
+
+// При открытии карточки товара
+eventEmitter.on(EnEvents.CardSelect, (product: IProduct) => {
+  try {
+    const container = utils.cloneTemplate(cardPreviewTemplate);
+    const cardPreview = new CardPreview(container);
+    modal.replaceContent(cardPreview.render(product));
+    modal.open();
+  } catch (error) {
+    console.error('#Error with Modal or CardPreview#:', error);
+  }
 });
 
 //Блокируем страницу при открытии модальных окон

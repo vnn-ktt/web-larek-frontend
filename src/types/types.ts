@@ -16,6 +16,8 @@ export enum EnEvents {
   CatalogChange = 'catalog:change',
   CatalogAssembled = 'catalog:assembled',
   CardSelect = 'card:select',
+  ModalOpen = 'modal:open',
+  ModalClose = 'modal:close',
 
   CartOpen = 'cart:open',
   CartClose = 'cart:close',
@@ -24,8 +26,6 @@ export enum EnEvents {
   PaymentFilled = 'payment:filled',
   ContactsFilled = 'contacts:filled',
   OrderPost = 'order:post',
-  ModalOpen = 'modal:open',
-  ModalClose = 'modal:close',
   FormChange = 'form:change',
 }
 
@@ -88,6 +88,7 @@ export interface IProductList {
 
 export interface ICatalog {
   addProduct(productData: Partial<IProduct>): void;
+  addProducts(products: Partial<IProduct>[]): void;
   removeProduct(productId: string): void;
   getProductById(productId: string): IProduct | undefined;
   getAllProducts(): IProduct[];
@@ -119,30 +120,24 @@ export interface IOrder extends IPayment, IContacts, ISuccessOrder {}
 /*View Components */
 
 export interface IPage {
-  wrapper: HTMLElement;
-  gallery: HTMLElement;
-  cart: HTMLElement;
-  cartCounter: HTMLElement;
-  isLocked: boolean;
+  replaceGallery(items: HTMLElement[]): void;
+  replaceCartCounter(value: number): void;
+  togglePageLock(value: boolean): void;
 }
 
 export interface ICard {
-  index: HTMLElement;
-  title: HTMLElement;
-  image: HTMLImageElement;
-  category: HTMLElement;
-  price: HTMLElement;
-  description: HTMLElement;
-  button: HTMLButtonElement;
-  buttonText: string;
+  render(data: IProduct): HTMLElement;
 }
 
-export interface ICardAction {
+export interface ICardClickHandler {
   onClick: (event: MouseEvent) => void;
 }
 
-export interface IGallery {
-  cards: ICard[];
+export interface IModal {
+  open(): void;
+  close(): void;
+  replaceContent(content: HTMLElement): void;
+  toggleIsOpened(value: boolean): void;
 }
 
 export interface ICart {

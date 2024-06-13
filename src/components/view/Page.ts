@@ -2,7 +2,7 @@ import { IPage, IEventEmitter, EnEvents } from '../../types/types';
 import { View } from '../base/View';
 import * as utils from '../../utils/utils';
 
-export class Page extends View<IPage> {
+export class Page extends View<IPage> implements IPage {
   protected _wrapper: HTMLElement;
   protected _gallery: HTMLElement;
   protected _cart: HTMLElement;
@@ -24,15 +24,15 @@ export class Page extends View<IPage> {
     });
   }
 
-  replaceGallery(items: HTMLElement[]) {
+  replaceGallery(items: HTMLElement[]): void {
     this._gallery.replaceChildren(...items);
   }
 
-  replaceCartCounter(value: number) {
+  replaceCartCounter(value: number): void {
     this.setTextContent(this._cartCounter, String(value));
   }
 
-  togglePageLock(value: boolean) {
+  togglePageLock(value: boolean): void {
     if (value) {
       this._isLocked = true;
       this._wrapper.classList.add('page__wrapper_locked');
