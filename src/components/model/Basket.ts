@@ -1,9 +1,19 @@
+import { EnEvents, IProduct } from '../../types/types';
 import { Catalog } from './Catalog';
-import { IProductList, IBasket, IEventEmitter } from '../../types/types';
 
-export class Basket extends Catalog implements IBasket {
-  constructor(data: Partial<IProductList>, eventEmitter: IEventEmitter) {
-    super(data, eventEmitter);
+export class Basket extends Catalog {
+  products: IProduct[] = [];
+
+  toggleProduct(product: IProduct) {
+    if (product.status === 'gallery' && product.price !== null) {
+      this.products.push(product);
+      product.status = 'basket';
+      this.emitChanges(EnEvents.BasketChange, this.products);
+    } else if (product.status === 'basket') {
+      this.products = this.products.filter((item) => item !== product);
+      product.status = 'gallery';
+      this.emitChanges(EnEvents.BasketChange, this.products);
+    }
   }
 
   getTotalCost(): number {
@@ -15,5 +25,13 @@ export class Basket extends Catalog implements IBasket {
   getProductsAmount(): number {
     const productsAmount = this.getAllProducts().length;
     return productsAmount;
+  }
+
+  clearBasket() {
+    this.products.forEach((product) => {
+      product.status = 'gallery';
+    });
+    this.products = [];
+    this.emitChanges(EnEvents.BasketChange, this.products);
   }
 }

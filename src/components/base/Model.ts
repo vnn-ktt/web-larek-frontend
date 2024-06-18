@@ -5,31 +5,11 @@ export const isModel = (obj: unknown): obj is Model<unknown> => {
 };
 
 export abstract class Model<T> {
-  constructor(
-    protected _data: Partial<T>,
-    protected _eventEmitter: IEventEmitter,
-  ) {}
-
-  setData(data: Partial<T>): void {
-    Object.assign(this._data, data);
-    this.emitChanges(EnEvents.ModelChange, this._data);
+  constructor(data: Partial<T>, protected eventEmitter: IEventEmitter) {
+    Object.assign(this, data);
   }
 
-  getData(): Partial<T> | null {
-    return this._data ? { ...this._data } : null;
-  }
-
-  updateData(updatedData: Partial<T>): void {
-    Object.assign(this._data, updatedData);
-    this.emitChanges(EnEvents.ModelChange, this._data);
-  }
-
-  clearData(): void {
-    this._data = {} as Partial<T>;
-    this.emitChanges(EnEvents.ModelChange, this._data);
-  }
-
-  emitChanges(event: string, payload?: object): void {
-    this._eventEmitter.emit(event, payload ?? {});
+  emitChanges(event: EnEvents, payload?: object): void {
+    this.eventEmitter.emit(event, payload ?? {});
   }
 }

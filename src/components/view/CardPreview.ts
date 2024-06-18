@@ -1,14 +1,14 @@
 import { IProduct, ICardClickHandler, TProductStatus } from '../../types/types';
-import { Card } from './Card';
+import { CardCatalog } from './CardCatalog';
 import * as utils from '../../utils/utils';
 
-export class CardPreview extends Card {
+export class CardPreview extends CardCatalog {
   protected _description: HTMLElement;
   protected _button: HTMLButtonElement;
   protected _index: HTMLElement;
 
   constructor(container: HTMLElement, clickHandler?: ICardClickHandler) {
-    super(container, clickHandler);
+    super(container);
     this._description = utils.ensureElement<HTMLElement>(
       '.card__text',
       container,
@@ -17,32 +17,31 @@ export class CardPreview extends Card {
       '.card__button',
       container,
     );
-    // this._index = utils.ensureElement<HTMLElement>(
-    //   '.basket__item-index',
-    //   container,
-    // );
+    this._image = utils.ensureElement<HTMLImageElement>(
+      '.card__image',
+      container,
+    );
+    this._category = utils.ensureElement<HTMLElement>(
+      '.card__category',
+      container,
+    );
+    if (clickHandler.onClick) {
+      this._button.addEventListener('click', clickHandler.onClick);
+    }
   }
 
-  // get index(): string | undefined {
-  //   return this._index.textContent || undefined;
-  // }
-
-  // set index(value: string) {
-  //   this.setTextContent(this._index, value);
-  // }
-
-  private setDescription(description: string): void {
+  protected setDescription(description: string): void {
     this._description.textContent = description;
   }
 
-  private setButton(status: TProductStatus): void {
+  toggleButton(status: TProductStatus) {
     this._button.textContent = status === 'gallery' ? 'В корзину' : 'Удалить';
   }
 
   build(data: IProduct): this {
     super.build(data);
     this.setDescription(data.description);
-    this.setButton(data.status);
+    this.toggleButton(data.status);
     return this;
   }
 

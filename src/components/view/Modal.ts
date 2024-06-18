@@ -23,6 +23,10 @@ export class Modal extends View<IModal> implements IModal {
     this._content.addEventListener('click', (event) => event.stopPropagation());
   }
 
+  isOpen(): boolean {
+    return this.container.classList.contains('modal_active');
+  }
+
   replaceContent(content: HTMLElement): void {
     this._content.replaceChildren(content);
   }

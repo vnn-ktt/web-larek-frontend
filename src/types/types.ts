@@ -11,18 +11,18 @@ export enum EnProductCategories {
 }
 
 export enum EnEvents {
-  ModelChange = 'model:change',
   ProductChange = 'product:change',
+  ProductToggle = 'product:toggle',
   CatalogChange = 'catalog:change',
-  CatalogAssembled = 'catalog:assembled',
-  CardSelect = 'card:select',
+  CatalogAssemble = 'catalog:assemble',
+  BasketChange = 'basket:change',
   ModalOpen = 'modal:open',
   ModalClose = 'modal:close',
-
+  CardOpen = 'card:open',
   CartOpen = 'cart:open',
-  CartClose = 'cart:close',
   CartChange = 'cart:change',
 
+  OrderCreate = 'order:create',
   PaymentFilled = 'payment:filled',
   ContactsFilled = 'contacts:filled',
   OrderPost = 'order:post',
@@ -49,11 +49,11 @@ export type TEventEmitter = {
   data: unknown;
 };
 
-export type TPaymentMethods = 'card' | 'cash';
+export type TPaymentMethods = 'online' | 'offline';
 
 export type TProductStatus = 'basket' | 'gallery';
 
-export type TFormErrors = Partial<Record<keyof IOrder, string>>;
+export type TOrderErrors = Partial<Record<keyof IOrder, string>>;
 
 /*
  *Interfaces
@@ -80,15 +80,12 @@ export interface IProduct {
   image: string;
   category: EnProductCategories;
   status: TProductStatus;
-}
-
-export interface IProductList {
-  products: IProduct[];
+  index: string;
 }
 
 export interface ICatalog {
-  addProduct(productData: Partial<IProduct>): void;
-  addProducts(products: Partial<IProduct>[]): void;
+  assembleCatalog(products: Partial<IProduct>[]): void;
+  addProduct(productData: Partial<IProduct>, status: TProductStatus): void;
   removeProduct(productId: string): void;
   getProductById(productId: string): IProduct | undefined;
   getAllProducts(): IProduct[];
@@ -98,6 +95,41 @@ export interface ICatalog {
 export interface IBasket extends ICatalog {
   getTotalCost(): number;
   getProductsAmount(): number;
+}
+
+/*View Components */
+
+export interface IPage {
+  replaceGallery(items: HTMLElement[]): void;
+  replaceCartCounter(value: number): void;
+  togglePageLock(value: boolean): void;
+}
+
+export interface ICard {
+  render(data: IProduct): HTMLElement;
+}
+
+export interface ICardClickHandler {
+  onClick: (event: Event) => void;
+}
+
+export interface IModal {
+  open(): void;
+  close(): void;
+  replaceContent(content: HTMLElement): void;
+  toggleIsOpened(value: boolean): void;
+}
+
+export interface ICart {
+  products: HTMLElement[];
+  total: number | string;
+}
+
+/* Form, Order */
+
+export interface IFormState {
+  valid: boolean;
+  errors: TOrderErrors[];
 }
 
 export interface IPayment {
@@ -113,48 +145,10 @@ export interface IContacts {
 export interface ISuccessOrder {
   id: string;
   total: number;
+  products: IProduct[];
 }
 
 export interface IOrder extends IPayment, IContacts, ISuccessOrder {}
-
-/*View Components */
-
-export interface IPage {
-  replaceGallery(items: HTMLElement[]): void;
-  replaceCartCounter(value: number): void;
-  togglePageLock(value: boolean): void;
-}
-
-export interface ICard {
-  render(data: IProduct): HTMLElement;
-}
-
-export interface ICardClickHandler {
-  onClick: (event: MouseEvent) => void;
-}
-
-export interface IModal {
-  open(): void;
-  close(): void;
-  replaceContent(content: HTMLElement): void;
-  toggleIsOpened(value: boolean): void;
-}
-
-export interface ICart {
-  list: HTMLElement[];
-  total: number;
-}
-
-export interface IForm {
-  reset(): void;
-  validate(): boolean;
-  submit(): Promise<boolean>;
-}
-
-export interface IFormState {
-  valid: boolean;
-  errors: TFormErrors[];
-}
 
 /* API Components */
 

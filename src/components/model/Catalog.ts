@@ -1,67 +1,38 @@
-import { Model } from '../base/Model';
+import { IProduct, EnEvents } from '../../types/types';
 import { Product } from './Product';
-import {
-  IProduct,
-  IProductList,
-  ICatalog,
-  IEventEmitter,
-  EnEvents,
-} from '../../types/types';
+import { Model } from '../base/Model';
 
-export class Catalog extends Model<IProductList> implements ICatalog {
-  protected _data: IProductList;
+export class Catalog extends Model<IProduct[]> {
+  products: IProduct[];
 
-  constructor(data: Partial<IProductList>, eventEmitter: IEventEmitter) {
-    super(data, eventEmitter);
-    this._data = { products: [] };
+  assembleCatalog(products: IProduct[]): void {
+    this.products = products.map(
+      (product) => new Product(product, this.eventEmitter),
+    );
+    this.emitChanges(EnEvents.CatalogAssemble, this.products);
   }
 
   addProduct(productData: Partial<IProduct>): void {
-    const newProduct = new Product(productData, this._eventEmitter);
-    this._data.products.push(newProduct.getData() as IProduct);
-    this.emitChanges(EnEvents.CatalogChange, this._data);
-  }
-
-  addProducts(products: Partial<IProduct>[]): void {
-    this._data.products = products.map(
-      (productData) => new Product(productData, this._eventEmitter),
-    );
-    this.emitChanges(EnEvents.CatalogAssembled, this._data);
+    const newProduct = new Product(productData, this.eventEmitter);
+    this.products.push(newProduct as IProduct);
+    this.emitChanges(EnEvents.CatalogChange, this.products);
   }
 
   removeProduct(productId: string): void {
-    const index = this._data.products.findIndex(
+    const index = this.products.findIndex(
       (product) => product.id === productId,
     );
     if (index !== -1) {
-      this._data.products.splice(index, 1);
-      this.emitChanges(EnEvents.CatalogChange, this._data);
+      this.products.splice(index, 1);
+      this.emitChanges(EnEvents.CatalogChange, this.products);
     }
   }
 
   getProductById(productId: string): IProduct | undefined {
-    return this._data.products.find((product) => product.id === productId);
+    return this.products.find((product) => product.id === productId);
   }
 
   getAllProducts(): IProduct[] {
-    return this._data.products;
-  }
-
-  updateProduct(productId: string, updatedData: Partial<IProduct>): void {
-    const index = this._data.products.findIndex(
-      (product) => product.id === productId,
-    );
-    if (index !== -1) {
-      const updatedProductData = {
-        ...this._data.products[index],
-        ...updatedData,
-      };
-      const updatedProduct = new Product(
-        updatedProductData,
-        this._eventEmitter,
-      );
-      this._data.products[index] = updatedProduct.getData() as IProduct;
-      this.emitChanges(EnEvents.CatalogChange, this._data);
-    }
+    return this.products;
   }
 }

@@ -4,8 +4,8 @@ import {
   IProduct,
   ISuccessOrder,
   IWeblarekApi,
-} from '../types/types';
-import { Api } from './base/Api';
+} from '../../types/types';
+import { Api } from '../base/Api';
 
 export class WeblarekApi extends Api implements IWeblarekApi {
   protected readonly _weblarek_url: string;
