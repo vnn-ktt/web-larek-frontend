@@ -1,7 +1,9 @@
+import { EnEvents, IEventEmitter } from '../../types/types';
+
 export abstract class Validator<T> {
   protected errors: { [key: string]: string } = {};
 
-  constructor() {
+  constructor(protected eventEmitter: IEventEmitter) {
     this.errors = {};
   }
 
@@ -14,5 +16,9 @@ export abstract class Validator<T> {
   isValid(data: T): boolean {
     this.errors = {};
     return this.validate(data);
+  }
+
+  emitChanges(event: EnEvents, payload?: object): void {
+    this.eventEmitter.emit(event, payload ?? {});
   }
 }

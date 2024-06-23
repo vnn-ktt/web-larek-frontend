@@ -21,9 +21,15 @@ export enum EnEvents {
   CardOpen = 'card:open',
   CartOpen = 'cart:open',
   CartChange = 'cart:change',
-
   OrderCreate = 'order:create',
+
+  PaymentButtonChange = 'payment:change',
+  PaymentAddressChange = 'payment-address:change',
+  PaymentErrors = 'payment-errors:change',
   PaymentFilled = 'payment:filled',
+
+  ContactsErrors = 'contacts-errors:change',
+
   ContactsFilled = 'contacts:filled',
   OrderPost = 'order:post',
   FormChange = 'form:change',
@@ -52,8 +58,6 @@ export type TEventEmitter = {
 export type TPaymentMethods = 'online' | 'offline';
 
 export type TProductStatus = 'basket' | 'gallery';
-
-export type TOrderErrors = Partial<Record<keyof IOrder, string>>;
 
 /*
  *Interfaces
@@ -129,7 +133,7 @@ export interface ICart {
 
 export interface IFormState {
   valid: boolean;
-  errors: TOrderErrors[];
+  errors: string[];
 }
 
 export interface IPayment {
@@ -142,13 +146,12 @@ export interface IContacts {
   phone: string;
 }
 
-export interface ISuccessOrder {
-  id: string;
+export interface IPurchase {
   total: number;
   products: IProduct[];
 }
 
-export interface IOrder extends IPayment, IContacts, ISuccessOrder {}
+export interface IOrder extends IPayment, IContacts, IPurchase {}
 
 /* API Components */
 
@@ -160,5 +163,5 @@ export interface IApi {
 
 export interface IWeblarekApi {
   getProductList: () => Promise<IProduct[]>;
-  postOrder: (order: IOrder) => Promise<ISuccessOrder>;
+  postOrder: (order: IOrder) => Promise<IPurchase>;
 }

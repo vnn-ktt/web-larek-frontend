@@ -7,7 +7,7 @@ export class Modal extends View<IModal> implements IModal {
   protected _content: HTMLElement;
   protected _isOpened: boolean;
 
-  constructor(container: HTMLElement, protected events: IEventEmitter) {
+  constructor(container: HTMLElement, protected eventEmitter: IEventEmitter) {
     super(container);
 
     this._buttonClose = utils.ensureElement<HTMLButtonElement>(
@@ -39,12 +39,12 @@ export class Modal extends View<IModal> implements IModal {
   open(): void {
     this.container.classList.add('modal_active');
     this.toggleIsOpened(true);
-    this.events.emit(EnEvents.ModalOpen);
+    this.eventEmitter.emit(EnEvents.ModalOpen);
   }
 
   close(): void {
     this.container.classList.remove('modal_active');
     this.toggleIsOpened(false);
-    this.events.emit(EnEvents.ModalClose);
+    this.eventEmitter.emit(EnEvents.ModalClose);
   }
 }

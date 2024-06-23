@@ -8,7 +8,7 @@ export class Cart extends View<ICart> {
   protected _buttonOrder: HTMLButtonElement;
   protected _total: HTMLElement;
 
-  constructor(container: HTMLElement, protected events: IEventEmitter) {
+  constructor(container: HTMLElement, protected eventEmitter: IEventEmitter) {
     super(container);
     this._productList = utils.ensureElement<HTMLElement>(
       '.basket__list',
@@ -18,7 +18,7 @@ export class Cart extends View<ICart> {
     this._buttonOrder = this.container.querySelector('.basket__button');
     if (this._buttonOrder) {
       this._buttonOrder.addEventListener('click', () => {
-        events.emit(EnEvents.OrderCreate);
+        eventEmitter.emit(EnEvents.OrderCreate);
       });
     }
   }
@@ -32,7 +32,7 @@ export class Cart extends View<ICart> {
         const container = utils.cloneTemplate(template);
         const cardBasket = new CardBasket(container, {
           onClick: () => {
-            this.events.emit(EnEvents.CartChange, product);
+            this.eventEmitter.emit(EnEvents.CartChange, product);
           },
         });
         product.index = (index + 1).toString();
