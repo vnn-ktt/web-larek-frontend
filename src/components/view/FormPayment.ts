@@ -1,14 +1,15 @@
-import { Form } from './Form';
 import {
   IPayment,
   TPaymentMethods,
-  IEventEmitter,
   IFormState,
+  IFormPayment,
   EnEvents,
+  IEventEmitter,
 } from '../../types/types';
+import { Form } from './Form';
 import * as utils from '../../utils/utils';
 
-export class FormPayment extends Form {
+export class FormPayment extends Form implements IFormPayment {
   protected _buttonCard: HTMLButtonElement;
   protected _buttonCash: HTMLButtonElement;
 
@@ -61,13 +62,13 @@ export class FormPayment extends Form {
     this.eventEmitter.emit(EnEvents.PaymentButtonChange, { value });
   }
 
-  build(data: Partial<IPayment> & Partial<IFormState>): this {
+  private build(data: Partial<IPayment> & Partial<IFormState>): this {
     const state = { errors: data.errors, valid: data.valid };
-    if (data.paymentMethod) {
-      if (data.paymentMethod === 'online') {
+    if (data.payment) {
+      if (data.payment === 'online') {
         this._buttonCard.classList.add('button_alt-active');
         this._buttonCash.classList.remove('button_alt-active');
-      } else if (data.paymentMethod === 'offline') {
+      } else if (data.payment === 'offline') {
         this._buttonCash.classList.add('button_alt-active');
         this._buttonCard.classList.remove('button_alt-active');
       }

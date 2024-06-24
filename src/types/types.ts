@@ -22,17 +22,15 @@ export enum EnEvents {
   CartOpen = 'cart:open',
   CartChange = 'cart:change',
   OrderCreate = 'order:create',
-
   PaymentButtonChange = 'payment:change',
   PaymentAddressChange = 'payment-address:change',
   PaymentErrors = 'payment-errors:change',
-  PaymentFilled = 'payment:filled',
-
+  PaymentFilled = 'order:submit',
+  ContactsEmailChange = 'contacts-email:change',
+  ContactsPhoneChange = 'contacts-phone:change',
   ContactsErrors = 'contacts-errors:change',
-
-  ContactsFilled = 'contacts:filled',
+  ContactsFilled = 'contacts:submit',
   OrderPost = 'order:post',
-  FormChange = 'form:change',
 }
 
 /*
@@ -58,6 +56,10 @@ export type TEventEmitter = {
 export type TPaymentMethods = 'online' | 'offline';
 
 export type TProductStatus = 'basket' | 'gallery';
+
+export interface IOnClick {
+  onClick: (event: Event) => void;
+}
 
 /*
  *Interfaces
@@ -93,51 +95,36 @@ export interface ICatalog {
   removeProduct(productId: string): void;
   getProductById(productId: string): IProduct | undefined;
   getAllProducts(): IProduct[];
-  updateProduct(productId: string, updatedData: Partial<IProduct>): void;
 }
 
 export interface IBasket extends ICatalog {
+  toggleProduct(product: IProduct): void;
   getTotalCost(): number;
   getProductsAmount(): number;
+  clearBasket(): void;
 }
-
-/*View Components */
-
-export interface IPage {
-  replaceGallery(items: HTMLElement[]): void;
-  replaceCartCounter(value: number): void;
-  togglePageLock(value: boolean): void;
-}
-
-export interface ICard {
-  render(data: IProduct): HTMLElement;
-}
-
-export interface ICardClickHandler {
-  onClick: (event: Event) => void;
-}
-
-export interface IModal {
-  open(): void;
-  close(): void;
-  replaceContent(content: HTMLElement): void;
-  toggleIsOpened(value: boolean): void;
-}
-
-export interface ICart {
-  products: HTMLElement[];
-  total: number | string;
-}
-
-/* Form, Order */
 
 export interface IFormState {
   valid: boolean;
-  errors: string[];
+  errors: string;
 }
 
+export interface IOrder extends IPayment, IContacts, IPurchase {
+  items: string[];
+  getPaymentData(): Partial<IPayment>;
+  getContactsData(): Partial<IContacts>;
+  clearOrder(): void;
+}
+
+export interface IOrderResult {
+  id: string;
+  total: number;
+}
+
+/* Form */
+
 export interface IPayment {
-  paymentMethod: TPaymentMethods;
+  payment: TPaymentMethods;
   address: string;
 }
 
@@ -148,10 +135,7 @@ export interface IContacts {
 
 export interface IPurchase {
   total: number;
-  products: IProduct[];
 }
-
-export interface IOrder extends IPayment, IContacts, IPurchase {}
 
 /* API Components */
 
@@ -164,4 +148,47 @@ export interface IApi {
 export interface IWeblarekApi {
   getProductList: () => Promise<IProduct[]>;
   postOrder: (order: IOrder) => Promise<IPurchase>;
+}
+
+/*View Components */
+
+export interface IModal {
+  open(): void;
+  close(): void;
+  isOpen(): boolean;
+  replaceContent(content: HTMLElement): void;
+}
+
+export interface IPage {
+  replaceGallery(items: HTMLElement[]): void;
+  replaceCartCounter(value: number): void;
+  togglePageLock(value: boolean): void;
+}
+
+export interface ICard {
+  render(data: IProduct): HTMLElement;
+}
+
+export interface ICardPreview extends ICard {
+  toggleButton(status: TProductStatus): void;
+}
+
+export interface ICart {
+  refreshCart(
+    products: IProduct[],
+    total: number | string,
+    template: HTMLTemplateElement,
+  ): void;
+}
+
+export interface IForm {
+  setFormState(state: IFormState): void;
+}
+
+export interface IFormPayment {
+  render(data: Partial<IPayment> & Partial<IFormState>): HTMLFormElement;
+}
+
+export interface IFormContacts {
+  render(data: Partial<IContacts> & Partial<IFormState>): HTMLFormElement;
 }

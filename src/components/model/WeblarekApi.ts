@@ -1,8 +1,8 @@
 import {
   TApiListResponse,
   IOrder,
+  IOrderResult,
   IProduct,
-  IPurchase,
   IWeblarekApi,
 } from '../../types/types';
 import { Api } from '../base/Api';
@@ -24,7 +24,7 @@ export class WeblarekApi extends Api implements IWeblarekApi {
     );
   }
 
-  postOrder(order: IOrder): Promise<IPurchase> {
-    return this.post(`/order/`, order).then((data: IPurchase) => data);
+  postOrder(order: IOrder): Promise<IOrderResult> {
+    return this.post(`/order/`, order).then((data: IOrderResult) => data);
   }
 }

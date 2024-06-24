@@ -1,10 +1,10 @@
-import { EnEvents, IProduct } from '../../types/types';
+import { EnEvents, IBasket, IProduct } from '../../types/types';
 import { Catalog } from './Catalog';
 
-export class Basket extends Catalog {
+export class Basket extends Catalog implements IBasket {
   products: IProduct[] = [];
 
-  toggleProduct(product: IProduct) {
+  toggleProduct(product: IProduct): void {
     if (product.status === 'gallery' && product.price !== null) {
       this.products.push(product);
       product.status = 'basket';
@@ -27,7 +27,7 @@ export class Basket extends Catalog {
     return productsAmount;
   }
 
-  clearBasket() {
+  clearBasket(): void {
     this.products.forEach((product) => {
       product.status = 'gallery';
     });

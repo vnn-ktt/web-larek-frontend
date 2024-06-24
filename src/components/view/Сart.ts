@@ -3,7 +3,7 @@ import { View } from '../base/View';
 import { CardBasket } from './CardBasket';
 import * as utils from '../../utils/utils';
 
-export class Cart extends View<ICart> {
+export class Cart extends View<ICart> implements ICart {
   protected _productList: HTMLElement;
   protected _buttonOrder: HTMLButtonElement;
   protected _total: HTMLElement;
@@ -23,7 +23,7 @@ export class Cart extends View<ICart> {
     }
   }
 
-  protected updateProductList(
+  private updateProductList(
     products: IProduct[],
     template: HTMLTemplateElement,
   ) {
@@ -48,11 +48,11 @@ export class Cart extends View<ICart> {
     }
   }
 
-  protected updateTotal(total: number | string) {
+  private updateTotal(total: number | string) {
     this.setTextContent(this._total, `${total} синапсов`);
   }
 
-  protected toggleButtonOrder(items: IProduct[]) {
+  private toggleButtonOrder(items: IProduct[]) {
     if (items.length) {
       this.toggleDisabled(this._buttonOrder, false);
     } else {

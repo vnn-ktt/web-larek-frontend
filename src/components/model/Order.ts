@@ -2,22 +2,21 @@ import { Model } from '../base/Model';
 import {
   IOrder,
   TPaymentMethods,
-  IProduct,
   IPayment,
   IContacts,
 } from '../../types/types';
 
-export class Order extends Model<IOrder> {
-  paymentMethod: TPaymentMethods = 'online';
+export class Order extends Model<IOrder> implements IOrder {
+  payment: TPaymentMethods = 'online';
   address: string;
   email: string;
   phone: string;
   total: number;
-  products: IProduct[] = [];
+  items: string[] = [];
 
   getPaymentData(): Partial<IPayment> {
     return {
-      paymentMethod: this.paymentMethod,
+      payment: this.payment,
       address: this.address,
     };
   }
@@ -27,5 +26,14 @@ export class Order extends Model<IOrder> {
       phone: this.phone,
       email: this.email,
     };
+  }
+
+  clearOrder(): void {
+    this.payment = 'online';
+    this.address = '';
+    this.email = '';
+    this.phone = '';
+    this.total = null;
+    this.items = [];
   }
 }

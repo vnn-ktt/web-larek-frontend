@@ -1,8 +1,8 @@
-import { IProduct } from '../../types/types';
+import { IProduct, ICard } from '../../types/types';
 import { View } from '../base/View';
 import * as utils from '../../utils/utils';
 
-export class Card extends View<IProduct> {
+export class Card extends View<IProduct> implements ICard {
   protected _title: HTMLElement;
   protected _price: HTMLElement;
 
@@ -10,18 +10,6 @@ export class Card extends View<IProduct> {
     super(container);
     this._title = utils.ensureElement<HTMLElement>('.card__title', container);
     this._price = utils.ensureElement<HTMLElement>('.card__price', container);
-  }
-
-  get id(): string | undefined {
-    return this.container.dataset.id || undefined;
-  }
-
-  get title(): string | undefined {
-    return this._title.textContent || undefined;
-  }
-
-  get price(): string | undefined {
-    return this._price.textContent || undefined;
   }
 
   protected setId(id: string): void {
@@ -40,7 +28,7 @@ export class Card extends View<IProduct> {
     }
   }
 
-  build(data: IProduct): this {
+  protected build(data: IProduct): this {
     this.setId(data.id);
     this.setTitle(data.title);
     this.setPrice(data.price);

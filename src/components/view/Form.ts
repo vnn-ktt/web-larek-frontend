@@ -1,8 +1,8 @@
+import { IEventEmitter, IForm, IFormState } from '../../types/types';
 import { View } from '../base/View';
-import { IEventEmitter, IFormState } from '../../types/types';
 import * as utils from '../../utils/utils';
 
-export class Form extends View<IFormState> {
+export class Form extends View<IFormState> implements IForm {
   protected _errors: HTMLElement;
   protected _submit: HTMLButtonElement;
 
@@ -25,15 +25,15 @@ export class Form extends View<IFormState> {
     });
   }
 
-  setSumbitDisable(valid: boolean) {
+  private setSumbitDisable(valid: boolean) {
     this._submit.disabled = !valid;
   }
 
-  setErrors(errors: string[]) {
+  private setErrors(errors: string) {
     this.setTextContent(this._errors, errors);
   }
 
-  setFormState(state: IFormState) {
+  setFormState(state: IFormState): void {
     const { errors, valid } = state;
     this.setErrors(errors);
     this.setSumbitDisable(valid);

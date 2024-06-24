@@ -1,13 +1,18 @@
-import { IProduct, ICardClickHandler, TProductStatus } from '../../types/types';
+import {
+  IProduct,
+  ICardPreview,
+  IOnClick,
+  TProductStatus,
+} from '../../types/types';
 import { CardCatalog } from './CardCatalog';
 import * as utils from '../../utils/utils';
 
-export class CardPreview extends CardCatalog {
+export class CardPreview extends CardCatalog implements ICardPreview {
   protected _description: HTMLElement;
   protected _button: HTMLButtonElement;
   protected _index: HTMLElement;
 
-  constructor(container: HTMLElement, clickHandler?: ICardClickHandler) {
+  constructor(container: HTMLElement, clickHandler?: IOnClick) {
     super(container);
     this._description = utils.ensureElement<HTMLElement>(
       '.card__text',
@@ -30,15 +35,15 @@ export class CardPreview extends CardCatalog {
     }
   }
 
+  toggleButton(status: TProductStatus): void {
+    this._button.textContent = status === 'gallery' ? 'В корзину' : 'Удалить';
+  }
+
   protected setDescription(description: string): void {
     this._description.textContent = description;
   }
 
-  toggleButton(status: TProductStatus) {
-    this._button.textContent = status === 'gallery' ? 'В корзину' : 'Удалить';
-  }
-
-  build(data: IProduct): this {
+  protected build(data: IProduct): this {
     super.build(data);
     this.setDescription(data.description);
     this.toggleButton(data.status);

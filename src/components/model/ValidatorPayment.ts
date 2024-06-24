@@ -6,14 +6,14 @@ export class ValidatorPayment extends Validator<IPayment> {
 
   validate(order: IOrder): boolean {
     this.errors = {};
-    if (!order.paymentMethod) {
-      this.errors.paymentMethod = 'Необходимо указать вид оплаты';
+    if (!order.payment) {
+      this.errors.payment = 'Необходимо указать вид оплаты.';
     }
     if (!order.address) {
       this.errors.address = 'Необходимо указать адрес';
     } else if (!this.addressRegex.test(order.address)) {
       this.errors.address =
-        'Адрес должен быть не менее 10 символов, среди который могут быть , . - и цифры.';
+        'Адрес должен быть не менее 10 символов, среди который могут быть (, . -) и цифры.';
     }
     this.emitChanges(EnEvents.PaymentErrors, this.errors);
     return Object.keys(this.getErrors()).length === 0;

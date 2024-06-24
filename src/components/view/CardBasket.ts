@@ -1,4 +1,4 @@
-import { IProduct, ICardClickHandler } from '../../types/types';
+import { IProduct, IOnClick } from '../../types/types';
 import { Card } from './Card';
 import * as utils from '../../utils/utils';
 
@@ -6,7 +6,7 @@ export class CardBasket extends Card {
   protected _index: HTMLElement;
   protected _buttonDelete: HTMLButtonElement;
 
-  constructor(container: HTMLElement, clickHandler?: ICardClickHandler) {
+  constructor(container: HTMLElement, clickHandler?: IOnClick) {
     super(container);
     this._index = utils.ensureElement<HTMLElement>(
       '.basket__item-index',
@@ -19,14 +19,6 @@ export class CardBasket extends Card {
     if (clickHandler.onClick) {
       this._buttonDelete.addEventListener('click', clickHandler.onClick);
     }
-  }
-
-  get index(): string | undefined {
-    return this._index.textContent || undefined;
-  }
-
-  set index(value: string) {
-    this.setTextContent(this._index, value);
   }
 
   private setIndex(index: string): void {

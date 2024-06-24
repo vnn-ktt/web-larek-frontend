@@ -55,101 +55,33 @@ yarn build
 
 ### Перечисления
 
-- enum EnProductCategories {
-  soft = 'софт-скил',
-  hard = 'хард-скил',
-  additional = 'дополнительное',
-  other = 'другое',
-  button = 'кнопка',
-  } _//определяет категории продукта_
+- enum EnProductCategories - _Определяет категории продуктов_
 
-- enum EnEvents {
-  ModelChange = 'model:change',
-  CatalogPainted = 'catalog:painted',
-  ProductSelect = 'product:select',
-  BasketAdd = 'basket:add',
-  BasketRemove = 'basket:remove',
-  BasketOpen = 'basket:open',
-  BasketClose = 'basket:close',
-  BasketChange = 'basket:change',
-  PaymentFilled = 'payment:filled',
-  ContactsFilled = 'contacts:filled',
-  OrderPost = 'order:post',
-  ModalOpen = 'modal:open',
-  ModalClose = 'modal:close',
-  FormChange = 'form:change',
-  } _//определяет типы событий_
+- enum EnEvents - _Определяет типы событий_
 
-### Типы
+### Типы и общие интерфейсы
 
-- type TApiListResponse<Type> = {
-  total: number;
-  items: Type[];
-  }; _// Описывает ответ от API, содержащий общее количество элементов и сами элементы_
+- type TApiListResponse<Type> - _Описывает ответ от API_
 
-- type TApiPostMethods = 'POST' | 'PUT' | 'DELETE'; _// Представляет поддерживаемые методы запроса в API (POST, PUT, DELETE)_
+- type TApiPostMethods - _Представляет поддерживаемые методы запроса в API (POST, PUT, DELETE)_
 
-- type TEventName = string | RegExp; _// Определяет имя события_
+- type TEventName - _Определяет имя события_
 
-- type TSubscriber = Function; _// Подписчик на событие, представленный в виде функции_
+- type TSubscriber - _Подписчик на событие, представленный в виде функции_
 
-- type TEventEmitter = {
-  eventName: TEventName;
-  data: unknown;
-  }; _// Представляет собой структуру объекта события, включающего имя события и данные, связанные с событием_
+- type TEventEmitter - _Представляет собой структуру объекта события, включающего имя события и данные, связанные с событием_
 
-- type TPaymentMethods = 'card' | 'cash'; _// Возможные способы оплаты_
+- type TPaymentMethods - _Возможные способы оплаты (онлайн/офлайн)_
 
-- type TFormErrors = Partial<Record<keyof IOrder, string>>; _// Представляет ошибки формы, где ключами являются свойства IOrder, а значениями - строки ошибок_
+- type TProductStatus - _Возможные статусы продукта (корзина/галерея)_
+
+- interface IOnClick - _Интерфейс для передачи колбэка onClick_
 
 ### Интерфейсы базовых компонент
 
-- interface IApi {
-  baseUrl: string;
-  get(uri: string): Promise<object>;
-  post(uri: string, data: object, method: TApiPostMethods): Promise<object>;
-  } _//интерфейс АПИ_
+- interface IApi - _Интерфейс базового АПИ_
 
-- interface IEventEmitter {
-  on<T extends object>(event: TEventName, callback: (data: T) => void): void;
-  emit<T extends object>(event: string, data?: T): void;
-  trigger<T extends object>(
-  event: string,
-  context?: Partial<T>,
-  ): (data: T) => void;
-  } _//интерфейс объекта событий_
-
-- interface IModel<T> {
-  setData(data: Partial<T>): void;
-  getData(): Partial<T> | null;
-  updateData(updatedData: Partial<T>): void;
-  clearData(): void;
-  } _//интерфейс модели данных_
-
-- interface IView<T> {
-  setText(element: HTMLElement, value: unknown): void;
-  toggleClass(element: HTMLElement, className: string, force?: boolean): void;
-  toggleDisabled(element: HTMLElement, state: boolean): void;
-  toggleHidden(element: HTMLElement): void;
-  render(data?: Partial<T>): HTMLElement;
-  } _//интерфейс базового компонента GUI_
-
-- interface IForm {
-  reset(): void;
-  validate(): boolean;
-  submit(): Promise<boolean>;
-  } _// интерфейс описывает компоненты формы с методами сброса, проверки валидности и отправки данных_
-
-- interface IFormState {
-  valid: boolean;
-  errors: TFormErrors[];
-  } _// интерфейс описывает состояние формы_
-
-- interface IAppState {
-  catalog: ICatalog;
-  basket: IBasket;
-  order: IOrder | null;
-  } _//интерфейс состояния приложения в настоящий момент времени_
+- interface IEventEmitter - _Интерфейс объекта событий_
 
   ### Интерфейсы моделей данных
 

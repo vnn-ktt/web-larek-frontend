@@ -9,7 +9,7 @@ export class Page extends View<IPage> implements IPage {
   protected _cartCounter: HTMLElement;
   protected _isLocked: boolean;
 
-  constructor(container: HTMLElement, protected events: IEventEmitter) {
+  constructor(container: HTMLElement, protected eventEmitter: IEventEmitter) {
     super(container);
 
     this._wrapper = utils.ensureElement<HTMLElement>('.page__wrapper');
@@ -20,7 +20,7 @@ export class Page extends View<IPage> implements IPage {
     );
 
     this._cart.addEventListener('click', () => {
-      this.events.emit(EnEvents.CartOpen);
+      this.eventEmitter.emit(EnEvents.CartOpen);
     });
   }
 

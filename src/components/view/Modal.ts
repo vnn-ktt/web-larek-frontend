@@ -1,5 +1,5 @@
-import { View } from '../base/View';
 import { EnEvents, IEventEmitter, IModal } from '../../types/types';
+import { View } from '../base/View';
 import * as utils from '../../utils/utils';
 
 export class Modal extends View<IModal> implements IModal {
@@ -9,7 +9,6 @@ export class Modal extends View<IModal> implements IModal {
 
   constructor(container: HTMLElement, protected eventEmitter: IEventEmitter) {
     super(container);
-
     this._buttonClose = utils.ensureElement<HTMLButtonElement>(
       '.modal__close',
       container,
@@ -23,6 +22,11 @@ export class Modal extends View<IModal> implements IModal {
     this._content.addEventListener('click', (event) => event.stopPropagation());
   }
 
+  private toggleOpen(value: boolean): void {
+    if (value) this._isOpened = true;
+    else this._isOpened = false;
+  }
+
   isOpen(): boolean {
     return this.container.classList.contains('modal_active');
   }
@@ -31,20 +35,15 @@ export class Modal extends View<IModal> implements IModal {
     this._content.replaceChildren(content);
   }
 
-  toggleIsOpened(value: boolean): void {
-    if (value) this._isOpened = true;
-    else this._isOpened = false;
-  }
-
   open(): void {
     this.container.classList.add('modal_active');
-    this.toggleIsOpened(true);
+    this.toggleOpen(true);
     this.eventEmitter.emit(EnEvents.ModalOpen);
   }
 
   close(): void {
     this.container.classList.remove('modal_active');
-    this.toggleIsOpened(false);
+    this.toggleOpen(false);
     this.eventEmitter.emit(EnEvents.ModalClose);
   }
 }

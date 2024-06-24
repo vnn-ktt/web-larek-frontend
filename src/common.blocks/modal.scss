@@ -1,5 +1,5 @@
-@use "variables" as *;
-@use "mixins";
+@use 'variables' as *;
+@use 'mixins';
 
 .modal {
   @include mixins.sublayer;
@@ -11,6 +11,7 @@
   z-index: 100;
   padding-top: 5vh;
   padding-bottom: 5vh;
+  min-height: 90dvh;
 
   &_active {
     display: flex;
@@ -21,7 +22,7 @@
     @include mixins.flex(column);
     gap: $defaultPadding;
     background-color: $background;
-    min-height: 90vmin;
+    height: max-content;
     border-radius: 3rem;
     box-sizing: border-box;
     position: relative;
@@ -58,7 +59,7 @@
   }
 
   &__message {
-    white-space:nowrap;
+    white-space: nowrap;
     max-width: 60%;
     text-overflow: ellipsis;
     overflow: hidden;

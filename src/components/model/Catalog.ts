@@ -1,8 +1,8 @@
-import { IProduct, EnEvents } from '../../types/types';
+import { IProduct, ICatalog, EnEvents } from '../../types/types';
 import { Product } from './Product';
 import { Model } from '../base/Model';
 
-export class Catalog extends Model<IProduct[]> {
+export class Catalog extends Model<IProduct[]> implements ICatalog {
   products: IProduct[];
 
   assembleCatalog(products: IProduct[]): void {
@@ -34,5 +34,9 @@ export class Catalog extends Model<IProduct[]> {
 
   getAllProducts(): IProduct[] {
     return this.products;
+  }
+
+  getProductIds(): string[] {
+    return this.products.map((product) => product.id);
   }
 }
