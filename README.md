@@ -51,91 +51,75 @@ npm run build
 yarn build
 ```
 
+## UML. Диаграмма классов
+
 ## Основные типы, перечисления и интерфейсы
 
 ### Перечисления
 
-- enum EnProductCategories - _Определяет категории продуктов_
+- `EnProductCategories` - _Определяет категории продуктов_
 
-- enum EnEvents - _Определяет типы событий_
+- `EnEvents` - _Определяет типы событий_
 
-### Типы и общие интерфейсы
+### Типы
 
-- type TApiListResponse<Type> - _Описывает ответ от API_
+- `TApiListResponse<Type>` - _Описывает ответ от API_
 
-- type TApiPostMethods - _Представляет поддерживаемые методы запроса в API (POST, PUT, DELETE)_
+- `TApiPostMethods` - _Представляет поддерживаемые методы запроса в API (POST, PUT, DELETE)_
 
-- type TEventName - _Определяет имя события_
+- `TEventName` - _Определяет имя события_
 
-- type TSubscriber - _Подписчик на событие, представленный в виде функции_
+- `TSubscriber` - _Подписчик на событие, представленный в виде функции_
 
-- type TEventEmitter - _Представляет собой структуру объекта события, включающего имя события и данные, связанные с событием_
+- `TEventEmitter` - _Представляет собой структуру объекта события, включающего имя события и данные, связанные с событием_
 
-- type TPaymentMethods - _Возможные способы оплаты (онлайн/офлайн)_
+- `TPaymentMethods` - _Возможные способы оплаты (онлайн/офлайн)_
 
-- type TProductStatus - _Возможные статусы продукта (корзина/галерея)_
+- `TProductStatus` - _Возможные статусы продукта (корзина/галерея)_
 
-- interface IOnClick - _Интерфейс для передачи колбэка onClick_
+### Интерфейсы
 
-### Интерфейсы базовых компонент
+- `IOnClick` - _Интерфейс для передачи колбэка onClick_
 
-- interface IApi - _Интерфейс базового АПИ_
+- `IEventEmitter` - _Интерфейс класса событий_
 
-- interface IEventEmitter - _Интерфейс объекта событий_
+- `IApi` - _Интерфейс базового АПИ_
 
-  ### Интерфейсы моделей данных
+- `IWeblarekApi` - _Интерфейс АПИ вебларька_
 
-- interface IProduct {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  image: string;
-  category: EnProductCategories;
-  selected: boolean;
-  } _// интерфейс описывает продукт_
+- `IProduct` - _Интерфейс модели данных продукта_
 
-- interface ICatalog {
-  products: IProduct[];
-  } _// интерфейс описывает каталог продуктов_
+- `ICatalog` - _Интерфейс каталога_
 
-- interface IBasket {
-  products: IProduct[];
-  getProducts(): IProduct[];
-  getTotal(): number;
-  getAmount(): number;
-  addProduct(product: IProduct): void;
-  removeProduct(product: IProduct): void;
-  clearBasket(): void;
-  } _// интерфейс описывает корзину продуктов_
+- `IBasket extends ICatalog` - _Интерфейс корзины (model-компонент)_
 
-- interface IPayment {
-  paymentMethod: TPaymentMethods;
-  address: string;
-  } _// интерфейс описывает информацию о платеже_
+- `IFormState` - _Интерфейс формы (model-компонент)_
 
-- interface IContacts {
-  email: string;
-  phone: string;
-  } _// интерфейс описывает контактные данные_
+- `IPayment` - _Интерфейс формы заказа: выбора оплаты и ввода адреса (model-компонент)_
 
-- interface ISuccessOrder {
-  total: number;
-  } _// интерфейс описывает информацию об успешном заказе_
+- `IContacts` - _Интерфейс формы контактов: ввода email и телефона (model-компонент)_
 
-- interface IOrder extends IPayment, IContacts, ISuccessOrder {} _// интерфейс описывает информацию о заказе, включая информацию о платеже, контактные данные и информацию об успешном заказе_
+- `IPurchase` - _Интерфейс покупки_
 
-### Интерфейсы GUI
+- `IOrder extends IPayment, IContacts, IPurchase` - _Интерфейс заказа_
 
-- interface IPage {
-  catalog: HTMLElement[];
-  productsCounter: number;
-  } _// интерфейс описывает страницу_
+- `IOrderResult` - _Интерфейс ответа от АПИ на запрос покупки товаров_
 
-- interface IBasketView {
-  list: HTMLElement[];
-  total: number;
-  } _// интерфейс описывает корзину товаров_
+- `IModal` - _Интерфейс базового модального окна_
+
+- `IPage` - _Интерфейс view-компонента страницы_
+
+- `ICard` - _Интерфейс базовой карточки товара_
+
+- `ICardPreview extends ICard` - _Интерфейс превью карточки товара_
+
+- `ICart` - _Интерфейс корзины (view-компонент)_
+
+- `IForm` - _Интерфейс базовой формы (view-компонент)_
+
+- `IFormPayment` - _Интерфейс формы заказа: выбора оплаты и ввода адреса (view-компонент)_
+
+- `IFormContacts` - _Интерфейс формы контактов: ввода email и телефона (view-компонент)_
 
 ## Базовые компоненты
 
@@ -145,33 +129,39 @@ yarn build
 
 **Конструктор** создает пустую коллекцию Map<EventName, Set<Subscriber>>() и сохраняет её в events. Конструкция предназначена для хранения событий и их подписчиков.
 
-Методы класса:
+#### Методы класса:
 
-- on<T extends object>(eventName: EventName, callback: (event: T)) - регистрирует обработчик на событие;
-- off(eventName: EventName, callback: Subscriber) - удаляет обработчик с события;
-- emit<T extends object>(eventName: string, data?: T) - оповещает все обработчики о произошедшем событии с передачей данных для обработки;
-- onAll(callback: (event: TEventEmitter) => void) - регистрирует обработчик на все события;
-- offAll() - удаляет обработчик со всех событий;
-- trigger<T extends object>(eventName: string, context?: Partial<T>) - генерирует событие в заданном контексте
+- `on<T extends object>(eventName: EventName, callback: (event: T))` - регистрирует обработчик на событие
+- `off(eventName: EventName, callback: Subscriber)` - удаляет обработчик с события
+- `emit<T extends object>(eventName: string, data?: T)` - оповещает все обработчики о произошедшем событии с передачей данных для обработки
+- `onAll(callback: (event: TEventEmitter) => void)` - регистрирует обработчик на все события
+- `offAll()` - удаляет обработчик со всех событий
+- `trigger<T extends object>(eventName: string, context?: Partial<T>)` - генерирует событие в заданном контексте
 
 Список возможных событий (таблица имеет не окончательный вид):
 
-| Событие         | Описание                                |
-| --------------- | --------------------------------------- |
-| model:change    | Изменилась модель данных                |
-| catalog:painted | Каталог товаров отрисован               |
-| product:select  | Продукт выбран                          |
-| basket:add      | Продукт добавлен в корзину              |
-| basket:remove   | Продукт удален из корзины               |
-| basket:open     | Корзина открыта                         |
-| basket:close    | Корзина закрыта                         |
-| basket:change   | Корзина изменилась                      |
-| payment:filled  | Пользователем заполнена форма оплаты    |
-| contacts:filled | Пользователем заполнена форма контактов |
-| order:post      | Заказ отправлен на сервер               |
-| modal:open      | Открыто модальное окно                  |
-| modal:close     | Закрыто модальное окно                  |
-| form:change     | Данные в форме изменились               |
+| Событие                | Описание                               |
+| ---------------------- | -------------------------------------- |
+| product:change         | Изменились данные продукта             |
+| product:toggle         | По нажатию на карточку продукта        |
+| catalog:change         | Изменился каталог товаров              |
+| catalog:assemble       | Собран каталог товаров                 |
+| basket:change          | Изменилась корзина (model)             |
+| modal:open             | Открыто модальное окно                 |
+| modal:close            | Закрыто модальное окно                 |
+| card:open              | Открылась карточка товара              |
+| cart:open              | Открылась коризна (view)               |
+| cart:change            | Изменилась корзина (view)              |
+| order:create           | Открылась форма ввода оплаты и адреса  |
+| payment:change         | Изменился вид оплаты                   |
+| payment-address:change | Изменился адрес                        |
+| payment-errors:change  | Изменились ошибки формы оплаты         |
+| order:submit           | Открылась форма ввода email и телефона |
+| contacts-email:change  | Изменился email                        |
+| contacts-phone:change  | Изменился телефон                      |
+| contacts-errors:change | Изменились ошибки формы контактов      |
+| contacts:filled        | Заказ сформирован                      |
+| order:post             | Заказ отправлен на сервер              |
 
 ### Класс Api
 
@@ -179,11 +169,11 @@ yarn build
 
 **Конструктор** принимает аргументами основной URL сервера, объект опций и сохраняет их в поля baseUrl, \_options.
 
-Методы класса:
+#### Методы класса:
 
-- \_handleResponse(response: Response): Promise<object> - инкапсулированный метод, обрабатывает ответ от сервера (по умолчанию - в формате JSON);
-- get(uri: string) - возвращает обработанные c handleResponse данные, отправленные с помощью метода GET;
-- post(uri: string, data: object, method: ApiPostMethods = 'POST') - возвращает обработанные c handleResponse данные, отправленные с помощью метода POST
+- `\_handleResponse(response: Response): Promise<object>` - инкапсулированный метод, обрабатывает ответ от сервера (по умолчанию - в формате JSON)
+- `get(uri: string)` - возвращает обработанные c handleResponse данные, отправленные с помощью метода GET
+- `post(uri: string, data: object, method: ApiPostMethods = 'POST')` - возвращает обработанные c handleResponse данные, отправленные с помощью метода POST
 
 ### Класс Model
 
@@ -191,26 +181,83 @@ yarn build
 
 **Конструктор** принимает аргументом данные типа Partial<T> и объект типа EventEmitter, сохраняет их в поля data, events соответственно.
 
-Методы класса:
+#### Методы класса:
 
-- setData(data: Partial<T>): void - сеттер данных;
-- getData(): Partial<T> | null - геттер данных;
-- updateData(updatedData: Partial<T>): void - производит обновление данных с возможностью объединения старых и новых оных;
-- clearData(): void - присваивает null полю data;
-- protected changed(): void - для оповещения других классов об изменениях в модели
+- `emitChanges(event: EnEvents, payload?: object): void` - эмитирует событие с указанным именем **event** и дополнительными данными **payload**.
 
 ### Класс View
 
 Описывает **пользовательский интерфейс**.
 
-**Конструктор** принимает аргументом данные типа HTMLElement.
+**Конструктор** принимает аргументом данные типа HTMLElement - контейнер.
 
-Методы класса:
+#### Методы класса:
 
-- setText(element: HTMLElement, value: unknown): void - устанавливает текстовое содержимое элемента element в соответствии с заданным значением value;
-- toggleClass(element: HTMLElement, className: string, force?: boolean): void - переключает класс className для элемента element;
-- toggleDisabled(element: HTMLElement, state: boolean): void - изменяет доступность элемента element;
-- toggleHidden(element: HTMLElement): void - переключает видимость элемента element;
-- render(data?: Partial<T>): HTMLElement - обновляет свойства объекта на основе переданных данных data (рендерит элемент)
+- `setTextContent(element: HTMLElement, value: unknown): void` - устанавливает текстовое содержимое элемента element в соответствии с заданным значением value
+- `setImage(element: HTMLImageElement, src: string, alt?: string): void` - устанавливает изображение в element через src, alt
+- `getChild<T extends HTMLElement>(selector: string): T` - возвращает дочерний элемент объекта класса
+- `toggleClass(element: HTMLElement, className: string, force?: boolean): void` - переключает класс className для элемента element
+- `toggleDisabled(element: HTMLElement, state: boolean): void` - изменяет доступность элемента element
+- `toggleHidden(element: HTMLElement): void` - переключает видимость элемента element
+- `render(data?: Partial<T>): HTMLElement` - обновляет свойства объекта на основе переданных данных data (рендерит элемент)
 
-## Компоненты
+### Класс Validator
+
+Представляет собой абстрактный базовый класс для **валидации данных**.
+
+**Конструктор** инициализирует объект Validator с переданным объектом eventEmitter, инициализирует пустой объект errors для хранения сообщений об ошибках.
+
+#### Методы класса:
+
+- `abstract validate(data: T): boolean` - абстрактный метод, который должен быть реализован в подклассах для выполнения конкретной логики валидации. Принимает на вход данные типа **T**. Возвращает **true**, если данные валидны, и **false** в противном случае.
+
+- `getErrors(): { [key: string]: string }` - возвращает объект, содержащий текущие ошибки валидации. Ключи объекта — это поля, которые не прошли валидацию, значения - это соответствующие сообщения об ошибках.
+
+- `isValid(data: T): boolean` - проверяет валидность данных с помощью метода **validate**. Перед вызовом **validate** очищает объект **errors**. Возвращает **true**, если данные валидны, и **false** в противном случае.
+
+- `emitChanges(event: EnEvents, payload?: object): void` - эмитирует событие с указанным именем **event** и дополнительными данными **payload**.
+
+#### Пример использования:
+
+```typescript
+import { EnEvents } from '../../types/types';
+import { EventEmitter } from './EventEmitter';
+import { Validator } from './Validator';
+
+class MyDataValidator extends Validator<MyDataType> {
+  validate(data: MyDataType): boolean {
+    let isValid = true;
+    if (data.someField === '') {
+      this.errors.someField = 'Field cannot be empty';
+      isValid = false;
+    }
+    // Дополнительные проверки
+    return isValid;
+  }
+}
+
+const eventEmitter = new EventEmitter();
+const validator = new MyDataValidator(eventEmitter);
+
+const data = { someField: '' };
+if (!validator.isValid(data)) {
+  console.log(validator.getErrors()); // { someField: 'Field cannot be empty' }
+}
+
+validator.emitChanges(EnEvents.DATA_CHANGED, { newData: data });
+```
+
+В этом примере **MyDataValidator** расширяет **Validator**, предоставляя реализацию метода **validate** для проверки данных типа **MyDataType**. Если данные не валидны, ошибки сохраняются в объекте **errors** и могут быть получены методом **getErrors**. Метод **emitChanges** используется для отправки события о изменении данных.
+
+## Model-компоненты
+
+### Класс WeblarekApi
+
+Расширяет функциональность базового класса Api и предоставляет методы для взаимодействия с **API Weblarek**. Он реализует интерфейс IWeblarekApi и включает методы для получения списка продуктов и размещения заказов.
+
+**Конструктор** инициализирует экземпляр WeblarekApi с базовым URL для API запросов и URL для изображений Weblarek, сохраняет weblarek_url для использования при формировании полных путей к изображениям продуктов.
+
+#### Методы класса:
+
+- `getProductList(): Promise<IProduct[]>` - получает список продуктов с API, возвращает промис, который резолвится массивом объектов IProduct.
+- `postOrder(order: IOrder): Promise<IOrderResult>` - отправляет заказ на API, принимает IOrder параметром, возвращает IOrderResult промисом.
