@@ -9,8 +9,8 @@ import { Form } from './Form';
 import * as utils from '../../utils/utils';
 
 export class FormContacts extends Form implements IFormContacts {
-  private _inputEmail: HTMLInputElement;
-  private _inputPhone: HTMLInputElement;
+  protected _inputEmail: HTMLInputElement;
+  protected _inputPhone: HTMLInputElement;
 
   constructor(container: HTMLFormElement, eventEmitter: IEventEmitter) {
     super(container, eventEmitter);
@@ -47,11 +47,11 @@ export class FormContacts extends Form implements IFormContacts {
     });
   }
 
-  private setEmail(value: string) {
+  private setEmail(value: string): void {
     this._inputEmail.value = value;
   }
 
-  private setPhone(value: string) {
+  private setPhone(value: string): void {
     this._inputPhone.value = value;
   }
 

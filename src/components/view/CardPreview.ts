@@ -10,7 +10,6 @@ import * as utils from '../../utils/utils';
 export class CardPreview extends CardCatalog implements ICardPreview {
   protected _description: HTMLElement;
   protected _button: HTMLButtonElement;
-  protected _index: HTMLElement;
 
   constructor(container: HTMLElement, clickHandler?: IOnClick) {
     super(container);
@@ -20,14 +19,6 @@ export class CardPreview extends CardCatalog implements ICardPreview {
     );
     this._button = utils.ensureElement<HTMLButtonElement>(
       '.card__button',
-      container,
-    );
-    this._image = utils.ensureElement<HTMLImageElement>(
-      '.card__image',
-      container,
-    );
-    this._category = utils.ensureElement<HTMLElement>(
-      '.card__category',
       container,
     );
     if (clickHandler.onClick) {

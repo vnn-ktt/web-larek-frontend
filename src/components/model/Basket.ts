@@ -2,7 +2,7 @@ import { EnEvents, IBasket, IProduct } from '../../types/types';
 import { Catalog } from './Catalog';
 
 export class Basket extends Catalog implements IBasket {
-  products: IProduct[] = [];
+  protected products: IProduct[] = [];
 
   toggleProduct(product: IProduct): void {
     if (product.status === 'gallery' && product.price !== null) {
@@ -23,8 +23,7 @@ export class Basket extends Catalog implements IBasket {
   }
 
   getProductsAmount(): number {
-    const productsAmount = this.getAllProducts().length;
-    return productsAmount;
+    return this.products.length;
   }
 
   clearBasket(): void {

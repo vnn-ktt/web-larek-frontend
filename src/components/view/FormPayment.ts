@@ -10,38 +10,43 @@ import { Form } from './Form';
 import * as utils from '../../utils/utils';
 
 export class FormPayment extends Form implements IFormPayment {
-  protected _buttonCard: HTMLButtonElement;
-  protected _buttonCash: HTMLButtonElement;
+  protected _buttonOnline: HTMLButtonElement;
+  protected _buttonOffline: HTMLButtonElement;
+  protected _inputAddress: HTMLInputElement;
 
   constructor(container: HTMLFormElement, eventEmitter: IEventEmitter) {
     super(container, eventEmitter);
-    this._buttonCard = utils.ensureElement<HTMLButtonElement>(
+    this._buttonOnline = utils.ensureElement<HTMLButtonElement>(
       '[name="card"]',
       container,
     );
-    this._buttonCash = utils.ensureElement<HTMLButtonElement>(
+    this._buttonOffline = utils.ensureElement<HTMLButtonElement>(
       '[name="cash"]',
+      container,
+    );
+    this._inputAddress = utils.ensureElement<HTMLInputElement>(
+      '[name="address"]',
       container,
     );
     this.setHandlers();
   }
 
   private setHandlers(): void {
-    this._buttonCash.addEventListener('click', () => {
+    this._buttonOffline.addEventListener('click', () => {
       this.handlePaymentMethodChange(
         'offline',
-        this._buttonCash,
-        this._buttonCard,
+        this._buttonOffline,
+        this._buttonOnline,
       );
     });
-    this._buttonCard.addEventListener('click', () => {
+    this._buttonOnline.addEventListener('click', () => {
       this.handlePaymentMethodChange(
         'online',
-        this._buttonCard,
-        this._buttonCash,
+        this._buttonOnline,
+        this._buttonOffline,
       );
     });
-    this.container.addEventListener('input', (event: Event) => {
+    this._inputAddress.addEventListener('input', (event: Event) => {
       const target = event.target as HTMLInputElement;
       const input = target.name as keyof IPayment;
       const value = target.value;
@@ -66,11 +71,11 @@ export class FormPayment extends Form implements IFormPayment {
     const state = { errors: data.errors, valid: data.valid };
     if (data.payment) {
       if (data.payment === 'online') {
-        this._buttonCard.classList.add('button_alt-active');
-        this._buttonCash.classList.remove('button_alt-active');
+        this._buttonOnline.classList.add('button_alt-active');
+        this._buttonOffline.classList.remove('button_alt-active');
       } else if (data.payment === 'offline') {
-        this._buttonCash.classList.add('button_alt-active');
-        this._buttonCard.classList.remove('button_alt-active');
+        this._buttonOffline.classList.add('button_alt-active');
+        this._buttonOnline.classList.remove('button_alt-active');
       }
     }
     if (data.address !== undefined) {

@@ -3,12 +3,12 @@ import { View } from '../base/View';
 import * as utils from '../../utils/utils';
 
 export class Purchase extends View<IPurchase> {
-  protected _button: HTMLButtonElement;
+  protected _buttonSubmit: HTMLButtonElement;
   protected _total: HTMLElement;
 
   constructor(container: HTMLElement, handler: IOnClick) {
     super(container);
-    this._button = utils.ensureElement<HTMLButtonElement>(
+    this._buttonSubmit = utils.ensureElement<HTMLButtonElement>(
       '.order-success__close',
       this.container,
     );
@@ -17,15 +17,15 @@ export class Purchase extends View<IPurchase> {
       this.container,
     );
     if (handler?.onClick) {
-      this._button.addEventListener('click', handler.onClick);
+      this._buttonSubmit.addEventListener('click', handler.onClick);
     }
   }
 
-  private setTotal(value: number) {
+  private setTotal(value: number): void {
     this.setTextContent(this._total, `Списано ${value} синапсов`);
   }
 
-  private build(data: IOrderResult) {
+  private build(data: IOrderResult): this {
     this.setTotal(data.total);
     return this;
   }

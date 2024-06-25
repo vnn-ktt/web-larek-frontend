@@ -3,7 +3,7 @@ import { Product } from './Product';
 import { Model } from '../base/Model';
 
 export class Catalog extends Model<IProduct[]> implements ICatalog {
-  products: IProduct[];
+  protected products: IProduct[];
 
   assembleCatalog(products: IProduct[]): void {
     this.products = products.map(

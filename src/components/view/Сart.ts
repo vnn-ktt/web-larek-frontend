@@ -26,7 +26,7 @@ export class Cart extends View<ICart> implements ICart {
   private updateProductList(
     products: IProduct[],
     template: HTMLTemplateElement,
-  ) {
+  ): void {
     if (products.length) {
       const productElements = products.map((product, index = 0) => {
         const container = utils.cloneTemplate(template);
@@ -48,11 +48,11 @@ export class Cart extends View<ICart> implements ICart {
     }
   }
 
-  private updateTotal(total: number | string) {
+  private updateTotal(total: number | string): void {
     this.setTextContent(this._total, `${total} синапсов`);
   }
 
-  private toggleButtonOrder(items: IProduct[]) {
+  private toggleButtonOrder(items: IProduct[]): void {
     if (items.length) {
       this.toggleDisabled(this._buttonOrder, false);
     } else {

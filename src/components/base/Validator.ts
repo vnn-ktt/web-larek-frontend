@@ -18,7 +18,7 @@ export abstract class Validator<T> {
     return this.validate(data);
   }
 
-  emitChanges(event: EnEvents, payload?: object): void {
+  protected emitChanges(event: EnEvents, payload?: object): void {
     this.eventEmitter.emit(event, payload ?? {});
   }
 }

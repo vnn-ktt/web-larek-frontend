@@ -4,7 +4,7 @@ import * as utils from '../../utils/utils';
 
 export class Form extends View<IFormState> implements IForm {
   protected _errors: HTMLElement;
-  protected _submit: HTMLButtonElement;
+  protected _submitButton: HTMLButtonElement;
 
   constructor(
     protected container: HTMLFormElement,
@@ -15,7 +15,7 @@ export class Form extends View<IFormState> implements IForm {
       '.form__errors',
       this.container,
     );
-    this._submit = utils.ensureElement<HTMLButtonElement>(
+    this._submitButton = utils.ensureElement<HTMLButtonElement>(
       'button[type=submit]',
       this.container,
     );
@@ -25,11 +25,11 @@ export class Form extends View<IFormState> implements IForm {
     });
   }
 
-  private setSumbitDisable(valid: boolean) {
-    this._submit.disabled = !valid;
+  private setSumbitDisable(valid: boolean): void {
+    this._submitButton.disabled = !valid;
   }
 
-  private setErrors(errors: string) {
+  private setErrors(errors: string): void {
     this.setTextContent(this._errors, errors);
   }
 

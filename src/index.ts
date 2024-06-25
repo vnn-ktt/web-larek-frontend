@@ -132,7 +132,7 @@ eventEmitter.on(EnEvents.CardOpen, (product: IProduct) => {
 eventEmitter.on(EnEvents.ProductToggle, (product) => {
   try {
     basket.toggleProduct(product as IProduct);
-    page.replaceCartCounter(basket.products.length);
+    page.replaceCartCounter(basket.getProductsAmount());
   } catch (error) {
     console.error('#Ошибка с добавлением (удалением) Basket# ', error);
   }
@@ -142,7 +142,7 @@ eventEmitter.on(EnEvents.ProductToggle, (product) => {
 eventEmitter.on(EnEvents.CartChange, (product) => {
   try {
     basket.toggleProduct(product as IProduct);
-    page.replaceCartCounter(basket.products.length);
+    page.replaceCartCounter(basket.getProductsAmount());
     cart.refreshCart(
       basket.getAllProducts(),
       basket.getTotalCost(),
@@ -296,6 +296,7 @@ eventEmitter.on(EnEvents.ContactsErrors, (errors: IContacts) => {
     .join(' ');
 });
 
+//Отправляем заказ на сервер
 eventEmitter.on(EnEvents.ContactsFilled, () => {
   order.items = basket.getProductIds();
   weblarekApi
@@ -307,7 +308,7 @@ eventEmitter.on(EnEvents.ContactsFilled, () => {
         basket.getTotalCost(),
         cardCartTemplate,
       );
-      page.replaceCartCounter(basket.products.length);
+      page.replaceCartCounter(basket.getProductsAmount());
       order.clearOrder();
       modal.replaceContent(purchase.render(result));
       eventEmitter.emit(EnEvents.CatalogAssemble);
