@@ -5,7 +5,7 @@ import {
   IProduct,
   IWeblarekApi,
 } from '../../types/types';
-import { Api } from '../base/Api';
+import { Api } from '../base/api';
 
 export class WeblarekApi extends Api implements IWeblarekApi {
   protected readonly _weblarek_url: string;
