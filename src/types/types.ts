@@ -82,7 +82,7 @@ export interface IProduct {
   id: string;
   title: string;
   description: string;
-  price: number;
+  price: number | null;
   image: string;
   category: EnProductCategories;
   status: TProductStatus;
@@ -91,16 +91,15 @@ export interface IProduct {
 
 export interface ICatalog {
   assembleCatalog(products: Partial<IProduct>[]): void;
-  addProduct(productData: Partial<IProduct>, status: TProductStatus): void;
-  removeProduct(productId: string): void;
-  getProductById(productId: string): IProduct | undefined;
   getAllProducts(): IProduct[];
 }
 
-export interface IBasket extends ICatalog {
+export interface IBasket {
   toggleProduct(product: IProduct): void;
-  getTotalCost(): number;
+  getAllProducts(): IProduct[];
   getProductsAmount(): number;
+  getProductIds(): string[];
+  getTotalCost(): number;
   clearBasket(): void;
 }
 
@@ -174,11 +173,8 @@ export interface ICardPreview extends ICard {
 }
 
 export interface ICart {
-  refreshCart(
-    products: IProduct[],
-    total: number | string,
-    template: HTMLTemplateElement,
-  ): void;
+  setProductList(products: HTMLElement[]): void;
+  refreshCart(products: IProduct[], total: number | string): void;
 }
 
 export interface IForm {

@@ -1,6 +1,5 @@
 import { IProduct, ICart, IEventEmitter, EnEvents } from '../../types/types';
 import { View } from '../base/View';
-import { CardBasket } from './CardBasket';
 import * as utils from '../../utils/utils';
 
 export class Cart extends View<ICart> implements ICart {
@@ -23,31 +22,6 @@ export class Cart extends View<ICart> implements ICart {
     }
   }
 
-  private updateProductList(
-    products: IProduct[],
-    template: HTMLTemplateElement,
-  ): void {
-    if (products.length) {
-      const productElements = products.map((product, index = 0) => {
-        const container = utils.cloneTemplate(template);
-        const cardBasket = new CardBasket(container, {
-          onClick: () => {
-            this.eventEmitter.emit(EnEvents.CartChange, product);
-          },
-        });
-        product.index = (index + 1).toString();
-        return cardBasket.render(product);
-      });
-      this._productList.replaceChildren(...productElements);
-    } else {
-      this._productList.replaceChildren(
-        utils.createElement<HTMLParagraphElement>('p', {
-          textContent: 'Корзина пуста',
-        }),
-      );
-    }
-  }
-
   private updateTotal(total: number | string): void {
     this.setTextContent(this._total, `${total} синапсов`);
   }
@@ -60,12 +34,19 @@ export class Cart extends View<ICart> implements ICart {
     }
   }
 
-  refreshCart(
-    products: IProduct[],
-    total: number | string,
-    template: HTMLTemplateElement,
-  ): void {
-    this.updateProductList(products, template);
+  setProductList(products: HTMLElement[]): void {
+    if (products.length) {
+      this._productList.replaceChildren(...products);
+    } else {
+      this._productList.replaceChildren(
+        utils.createElement<HTMLParagraphElement>('p', {
+          textContent: 'Корзина пуста',
+        }),
+      );
+    }
+  }
+
+  refreshCart(products: IProduct[], total: number | string): void {
     this.updateTotal(total);
     this.toggleButtonOrder(products);
   }

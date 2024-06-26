@@ -13,6 +13,7 @@ import { ValidatorPayment } from './components/model/ValidatorPayment';
 import { ValidatorContacts } from './components/model/ValidatorContacts';
 /* View */
 import { Modal } from './components/view/Modal';
+import { CardBasket } from './components/view/CardBasket';
 import { CardCatalog } from './components/view/CardCatalog';
 import { CardPreview } from './components/view/CardPreview';
 import { Cart } from './components/view/Сart';
@@ -93,7 +94,7 @@ eventEmitter.on(EnEvents.CatalogAssemble, () => {
       });
       return card.render(product);
     } catch (error) {
-      console.error('#Ошибка с созданием/рендером CardPreview# ', error);
+      console.error('#Ошибка с созданием/рендером CardCatalog# ', error);
       return null;
     }
   });
@@ -143,11 +144,19 @@ eventEmitter.on(EnEvents.CartChange, (product) => {
   try {
     basket.toggleProduct(product as IProduct);
     page.replaceCartCounter(basket.getProductsAmount());
-    cart.refreshCart(
-      basket.getAllProducts(),
-      basket.getTotalCost(),
-      cardCartTemplate,
-    );
+    const products = basket.getAllProducts();
+    const productElements = products.map((product, index = 0) => {
+      const container = utils.cloneTemplate(cardCartTemplate);
+      const cardBasket = new CardBasket(container, {
+        onClick: () => {
+          eventEmitter.emit(EnEvents.CartChange, product);
+        },
+      });
+      product.index = (index + 1).toString();
+      return cardBasket.render(product);
+    });
+    cart.setProductList(productElements);
+    cart.refreshCart(basket.getAllProducts(), basket.getTotalCost());
     modal.replaceContent(cart.render());
   } catch (error) {
     console.error('#Ошибка с добавлением (удалением) Basket/Cart# ', error);
@@ -157,11 +166,19 @@ eventEmitter.on(EnEvents.CartChange, (product) => {
 //Открываем корзину
 eventEmitter.on(EnEvents.CartOpen, () => {
   try {
-    cart.refreshCart(
-      basket.getAllProducts(),
-      basket.getTotalCost(),
-      cardCartTemplate,
-    );
+    const products = basket.getAllProducts();
+    const productElements = products.map((product, index = 0) => {
+      const container = utils.cloneTemplate(cardCartTemplate);
+      const cardBasket = new CardBasket(container, {
+        onClick: () => {
+          eventEmitter.emit(EnEvents.CartChange, product);
+        },
+      });
+      product.index = (index + 1).toString();
+      return cardBasket.render(product);
+    });
+    cart.setProductList(productElements);
+    cart.refreshCart(basket.getAllProducts(), basket.getTotalCost());
     modal.replaceContent(cart.render());
     modal.open();
   } catch (error) {
@@ -303,15 +320,22 @@ eventEmitter.on(EnEvents.ContactsFilled, () => {
     .postOrder(order)
     .then((result: IOrderResult) => {
       basket.clearBasket();
-      cart.refreshCart(
-        basket.getAllProducts(),
-        basket.getTotalCost(),
-        cardCartTemplate,
-      );
+      const products = basket.getAllProducts();
+      const productElements = products.map((product, index = 0) => {
+        const container = utils.cloneTemplate(cardCartTemplate);
+        const cardBasket = new CardBasket(container, {
+          onClick: () => {
+            eventEmitter.emit(EnEvents.CartChange, product);
+          },
+        });
+        product.index = (index + 1).toString();
+        return cardBasket.render(product);
+      });
+      cart.setProductList(productElements);
+      cart.refreshCart(basket.getAllProducts(), basket.getTotalCost());
       page.replaceCartCounter(basket.getProductsAmount());
       order.clearOrder();
       modal.replaceContent(purchase.render(result));
-      eventEmitter.emit(EnEvents.CatalogAssemble);
     })
     .catch((error) => {
       console.error('#Ошибка с запросом к WeblarekApi# ', error);

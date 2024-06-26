@@ -1,7 +1,7 @@
 import { EnEvents, IBasket, IProduct } from '../../types/types';
-import { Catalog } from './Catalog';
+import { Model } from '../base/Model';
 
-export class Basket extends Catalog implements IBasket {
+export class Basket extends Model<IProduct[]> implements IBasket {
   protected products: IProduct[] = [];
 
   toggleProduct(product: IProduct): void {
@@ -16,14 +16,22 @@ export class Basket extends Catalog implements IBasket {
     }
   }
 
-  getTotalCost(): number {
-    const products = this.getAllProducts();
-    const totalCost = products.reduce((acc, product) => acc + product.price, 0);
-    return totalCost;
+  getAllProducts(): IProduct[] {
+    return this.products;
   }
 
   getProductsAmount(): number {
     return this.products.length;
+  }
+
+  getProductIds(): string[] {
+    return this.products.map((product) => product.id);
+  }
+
+  getTotalCost(): number {
+    const products = this.getAllProducts();
+    const totalCost = products.reduce((acc, product) => acc + product.price, 0);
+    return totalCost;
   }
 
   clearBasket(): void {

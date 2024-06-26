@@ -118,7 +118,7 @@ const CATEGORY_SELECTOR: { [key: string]: string } = {
 
 - `ICatalog` - _Интерфейс каталога_
 
-- `IBasket extends ICatalog` - _Интерфейс корзины (model-компонент)_
+- `IBasket` - _Интерфейс корзины (model-компонент)_
 
 - `IFormState` - _Интерфейс формы (model-компонент)_
 
@@ -289,23 +289,6 @@ validator.emitChanges(EnEvents.DATA_CHANGED, { newData: data });
 - `getProductList(): Promise<IProduct[]>` - получает список продуктов с API, возвращает промис, который резолвится массивом объектов IProduct.
 - `postOrder(order: IOrder): Promise<IOrderResult>` - отправляет заказ на API, принимает IOrder параметром, возвращает IOrderResult промисом.
 
-### Класс Product
-
-Описывает модель данных **продукта**. Конструктор не переопределен. Все поля класса неинкапслуированы. Методы отсутствуют. Реализует IProduct.
-
-```typescript
-export class Product extends Model<IProduct> implements IProduct {
-  id: string;
-  description: string;
-  image: string;
-  title: string;
-  category: EnProductCategories;
-  price: number | null;
-  status: TProductStatus = 'gallery';
-  index: string;
-}
-```
-
 ### Класс Catalog
 
 Расширяет функциональность базового класса Model и предоставляет методы для управления **каталогом продуктов**. Он реализует интерфейс **ICatalog** и включает методы для добавления, удаления, получения продуктов и сборки каталога.
@@ -315,11 +298,7 @@ export class Product extends Model<IProduct> implements IProduct {
 #### Методы класса:
 
 - `assembleCatalog(products: IProduct[]): void` - собирает каталог из массива продуктов, создает экземпляры класса Product для каждого продукта и сохраняет их. Эмитирует событие EnEvents.CatalogAssemble с обновленным каталогом.
-- `addProduct(productData: Partial<IProduct>): void` - добавляет новый продукт в каталог, создает экземпляр класса Product и добавляет его в список продуктов. Эмитирует событие EnEvents.CatalogChange с обновленным каталогом.
-- `removeProduct(productId: string): void` - удаляет продукт из каталога по его ID. Если продукт найден и удален, эмитирует событие EnEvents.CatalogChange с обновленным каталогом.
-- `getProductById(productId: string): IProduct | undefined` - возвращает продукт по его ID, если он найден в каталоге.
 - `getAllProducts(): IProduct[]` - возвращает массив всех продуктов в каталоге.
-- `getProductIds(): string[]` - возвращает массив всех ID продуктов в каталоге.
 
 ### Класс Basket
 
@@ -330,8 +309,10 @@ export class Product extends Model<IProduct> implements IProduct {
 #### Методы класса:
 
 - `toggleProduct(product: IProduct): void` - добавляет продукт в корзину или удаляет его из корзины в зависимости от текущего статуса продукта. Эмитирует событие EnEvents.BasketChange с обновленным списком продуктов в корзине.
-- `getTotalCost(): number` - возвращает общую стоимость всех продуктов в корзине.
+- `getAllProducts(): IProduct[]` - возвращает массив всех продуктов в корзине.
 - `getProductsAmount(): number` - возвращает количество продуктов в корзине.
+- `getProductsIds(): string[]` - возвращает id всех продуктов корзины.
+- `getTotalCost(): number` - возвращает общую стоимость всех продуктов в корзине.
 - `clearBasket(): void` - очищает корзину, устанавливая статус всех продуктов на 'gallery'. Эмитирует событие EnEvents.BasketChange с пустой корзиной.
 
 ### Класс Order
@@ -432,10 +413,10 @@ interface IFormState {
 
 #### Методы класса:
 
-- `private updateProductList(products: IProduct[], template: HTMLTemplateElement): void` - приватный, обновляет список продуктов в корзине на основе переданных данных и шаблона. Создает элементы CardBasket для каждого продукта и добавляет их в контейнер \_productList.
 - `private updateTotal(total: number | string): void` - приватный, обновляет отображение общей стоимости корзины.
 - `private toggleButtonOrder(items: IProduct[]): void` - приватный, активирует или деактивирует кнопку оформления заказа в зависимости от наличия продуктов в корзине.
-- `refreshCart(products: IProduct[], total: number | string, template: HTMLTemplateElement): void` - обновляет содержимое корзины на основе переданных продуктов, общей стоимости и шаблона для отображения каждого продукта.
+- `setProductList(products: HTMLElement[]): void` - устанавливает карточки продуктов в корзине.
+- `refreshCart(products: IProduct[], total: number | string): void` - обновляет кнопку и общую стоимостю товаров.
 
 ### Класс Card
 
@@ -497,7 +478,7 @@ interface IFormState {
 - `setCategory(category: EnProductCategories): void` - устанавливает категорию продукта на карточке и применяет соответствующий класс стилей.
 - `build(data: IProduct): this` - строит карточку продукта на основе переданных данных, устанавливая заголовок, цену, идентификатор продукта, изображение, категорию.
 
-### Класс CardPreview extends CardCatalog
+### Класс CardPreview extends Card
 
 Расширяет класс CardCatalog и предоставляет методы для **отображения дополнительной информации о продукте в карточке-превью**. Реализует интерфейс ICardPreview, включая функции установки и отображения описания продукта и состояния кнопки действия.
 
@@ -508,16 +489,17 @@ interface IFormState {
 - `render(data: IProduct): HTMLElement` - рендерит предварительную карточку продукта на основе переданных данных и возвращает контейнер карточки.
 - `toggleButton(status: TProductStatus): void` - изменяет текст и функцию кнопки действия в зависимости от состояния продукта.
 
-#### Наследуемые защищенные методы (от класса CardCatalog):
+#### Наследуемые защищенные методы (от класса Card):
 
 - `setId(id: string): void` - устанавливает идентификатор продукта в dataset контейнера карточки.
 - `setTitle(title: string): void` - устанавливает заголовок продукта в соответствующий элемент на карточке.
 - `setPrice(price: number): void` - устанавливает цену продукта в соответствующий элемент на карточке. Если цена равна null, выводится сообщение "Бесценно".
-- `setCardImage(image: string, title: string): void` - устанавливает изображение продукта и его заголовок на карточке.
-- `setCategory(category: EnProductCategories): void` - устанавливает категорию продукта на карточке и применяет соответствующий класс стилей.
 
 #### Дополнительные защищенные методы:
 
+- `setCardImage(image: string, title: string): void` - устанавливает изображение продукта и его заголовок на карточке.
+- `setCategory(category: EnProductCategories): void` - устанавливает категорию продукта на карточке и применяет соответствующий класс стилей.
+- `setDescription(description: string): void` - устанавливает описание продукта на карточке.
 - `build(data: IProduct): this` - строит карточку продукта на основе переданных данных, устанавливая заголовок, цену, идентификатор продукта, изображение, категорию.
 
 #### Схема взаимодействия классов, производных от Card
