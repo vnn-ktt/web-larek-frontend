@@ -57,7 +57,7 @@ yarn build
 
 ## UML. Диаграмма классов
 
-![UML](https://github.com/vnn-ktt/web-larek-frontend/assets/106499823/01510cd0-626e-45c3-a76f-4b5470840d5b)
+![uml](https://github.com/vnn-ktt/web-larek-frontend/assets/106499823/943d2c97-bb0a-40dd-a324-16569cce760d)
 
 ## Константы, основные типы, перечисления и интерфейсы
 
@@ -504,7 +504,7 @@ interface IFormState {
 
 #### Схема взаимодействия классов, производных от Card
 
-![uml card](https://github.com/vnn-ktt/web-larek-frontend/assets/106499823/c5078502-5e5d-4c8c-affc-6c982412be34)
+![uml-card](https://github.com/vnn-ktt/web-larek-frontend/assets/106499823/9c3ef923-f05d-4b8f-92c3-e9783c0c2c47)
 
 ### Класс Form
 
