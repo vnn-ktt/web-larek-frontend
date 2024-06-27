@@ -174,6 +174,7 @@ export interface ICardPreview extends ICard {
 
 export interface ICart {
   setProductList(products: HTMLElement[]): void;
+  removeProducts(): void;
   refreshCart(products: IProduct[], total: number | string): void;
 }
 
@@ -186,5 +187,6 @@ export interface IFormPayment {
 }
 
 export interface IFormContacts {
+  getPhoneField(): HTMLElement;
   render(data: Partial<IContacts> & Partial<IFormState>): HTMLFormElement;
 }

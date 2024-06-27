@@ -46,6 +46,14 @@ export class Cart extends View<ICart> implements ICart {
     }
   }
 
+  removeProducts(): void {
+    this._productList.replaceChildren(
+      utils.createElement<HTMLParagraphElement>('p', {
+        textContent: 'Корзина пуста',
+      }),
+    );
+  }
+
   refreshCart(products: IProduct[], total: number | string): void {
     this.updateTotal(total);
     this.toggleButtonOrder(products);

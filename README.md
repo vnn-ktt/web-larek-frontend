@@ -416,6 +416,7 @@ interface IFormState {
 - `private updateTotal(total: number | string): void` - приватный, обновляет отображение общей стоимости корзины.
 - `private toggleButtonOrder(items: IProduct[]): void` - приватный, активирует или деактивирует кнопку оформления заказа в зависимости от наличия продуктов в корзине.
 - `setProductList(products: HTMLElement[]): void` - устанавливает карточки продуктов в корзине.
+- `removeProducts(): void` - обнуляет состав коризны.
 - `refreshCart(products: IProduct[], total: number | string): void` - обновляет кнопку и общую стоимостю товаров.
 
 ### Класс Card
@@ -559,6 +560,7 @@ interface IFormPayment {
 
 ```typescript
 interface IFormContacts {
+  getPhoneField(): HTMLElement;
   render(data: Partial<IContacts> & Partial<IFormState>): HTMLFormElement;
 }
 ```
@@ -567,6 +569,7 @@ interface IFormContacts {
 
 #### Незащищенные методы:
 
+- `getPhoneField(): HTMLElement` - возвращает поле ввода телефона.
 - `render(data: Partial<IContacts> & Partial<IFormState>): HTMLFormElement` - рендерит форму на основе переданных данных и возвращает контейнер формы.
 
 #### Наследуемые защищенные методы (от класса Form):

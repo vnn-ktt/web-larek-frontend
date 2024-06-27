@@ -34,6 +34,9 @@ import {
 } from './types/types';
 /* Api */
 import { WeblarekApi } from './components/model/WeblarekApi';
+/* Mask */
+import IMask from 'imask/holder';
+import 'imask';
 
 //Получаем шаблоны компонентов
 const cardCatalogTemplate =
@@ -70,6 +73,9 @@ const formContacts = new FormContacts(
   utils.cloneTemplate(contactsTemplate),
   eventEmitter,
 );
+IMask(formContacts.getPhoneField(), {
+  mask: '+{7}(000)000-00-00',
+});
 const purchase = new Purchase(utils.cloneTemplate(purchaseTemplate), {
   onClick: () => modal.close(),
 });
@@ -290,6 +296,7 @@ eventEmitter.on(
   EnEvents.ContactsPhoneChange,
   (data: { input: keyof IContacts; value: string }) => {
     order.phone = data.value;
+    console.log(data.value);
     try {
       if (validatorContacts.isValid(order)) {
         formState.valid = true;
@@ -320,18 +327,7 @@ eventEmitter.on(EnEvents.ContactsFilled, () => {
     .postOrder(order)
     .then((result: IOrderResult) => {
       basket.clearBasket();
-      const products = basket.getAllProducts();
-      const productElements = products.map((product, index = 0) => {
-        const container = utils.cloneTemplate(cardCartTemplate);
-        const cardBasket = new CardBasket(container, {
-          onClick: () => {
-            eventEmitter.emit(EnEvents.CartChange, product);
-          },
-        });
-        product.index = (index + 1).toString();
-        return cardBasket.render(product);
-      });
-      cart.setProductList(productElements);
+      cart.removeProducts();
       cart.refreshCart(basket.getAllProducts(), basket.getTotalCost());
       page.replaceCartCounter(basket.getProductsAmount());
       order.clearOrder();

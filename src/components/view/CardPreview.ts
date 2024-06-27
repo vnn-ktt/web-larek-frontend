@@ -62,6 +62,7 @@ export class CardPreview extends Card implements ICardPreview {
     this.setCategory(data.category);
     this.setDescription(data.description);
     this.toggleButton(data.status);
+    if (data.price === null) this.toggleDisabled(this._button, true);
     return this;
   }
 

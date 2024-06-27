@@ -69,6 +69,10 @@ export class FormContacts extends Form implements IFormContacts {
     return this;
   }
 
+  getPhoneField(): HTMLElement {
+    return this._inputPhone;
+  }
+
   render(data: Partial<IContacts> & Partial<IFormState>): HTMLFormElement {
     return this.build(data).container as HTMLFormElement;
   }
